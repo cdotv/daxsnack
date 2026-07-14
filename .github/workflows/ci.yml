@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - automation/preflight
   pull_request:
     branches:
       - main
