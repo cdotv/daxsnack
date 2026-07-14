@@ -1,0 +1,33 @@
+{% load static %}
+<!doctype html>
+<html lang="{{ language|default:'en' }}">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex,nofollow,noarchive" />
+    <title>{{ title }} | daxsnack</title>
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" sizes="any" />
+    <script src="{% static 'js/theme_bootstrap.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'css/style.min.css' %}" />
+  </head>
+  <body class="subscription-action-page">
+    <main class="subscription-action-main">
+      <a class="subscription-action-brand" href="/" aria-label="daxsnack">
+        <img src="{% static 'images/logo_start_512.webp' %}" alt="daxsnack" />
+        <span>daxsnack</span>
+      </a>
+      <section class="subscription-action-panel" aria-labelledby="subscription-action-title">
+        <h1 id="subscription-action-title">{{ title }}</h1>
+        <p>{{ message }}</p>
+        {% if form_action and button_label and token %}
+          <form method="post" action="{{ form_action }}">
+            {% csrf_token %}
+            <input type="hidden" name="t" value="{{ token }}" />
+            <button type="submit">{{ button_label }}</button>
+          </form>
+        {% endif %}
+        <a class="subscription-action-home" href="/">{{ home_label }}</a>
+      </section>
+    </main>
+  </body>
+</html>
