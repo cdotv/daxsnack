@@ -8,7 +8,7 @@ if not settings.configured:
     settings.configure(
         DEFAULT_FROM_EMAIL="daxsnack <sender@daxsnack.com>",
         EMAIL_FROM_NAME="daxsnack",
-        SECRET_KEY="test-only-public-component-signing-key",
+        SECRET_KEY="test-only-public-component-signing-key",  # pragma: allowlist secret
         SITE_URL="https://daxsnack.com",
     )
 
