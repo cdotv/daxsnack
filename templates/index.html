@@ -1,0 +1,482 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>daxsnack | self-hosted setup dashboard</title>
+    <meta name="description" content="A self-hosted daxsnack dashboard connected to an operator-provided strategy." />
+    <meta name="author" content="{{ site_author }}" />
+    <meta name="contact-ts" content="{{ contact_ts }}" />
+    <meta name="contact-sig" content="{{ contact_sig }}" />
+    <meta name="subscribe-ts" content="{{ subscribe_ts }}" />
+    <meta name="subscribe-sig" content="{{ subscribe_sig }}" />
+    <meta name="ver" content="{% if version_display %}{{ version_display }}{% endif %}" />
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" sizes="any" />
+    <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon" />
+    <script src="{% static 'js/theme_bootstrap.js' %}"></script>
+    <link rel="preload" as="image" href="{% static 'images/logo_start_512.webp' %}" type="image/webp" />
+    <link rel="preload" as="font" href="{% static 'fonts/IBMPlexMono/IBMPlexMono-SemiBold.woff2' %}" type="font/woff2" crossorigin />
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+  </head>
+  <body>
+    <div class="bg-layers" aria-hidden="true">
+      <div class="bg-grid"></div>
+      <div class="bg-candles"></div>
+    </div>
+    <!-- Start page overlay: visible logo flies into the nav -->
+    <div class="start-overlay is-active" aria-hidden="true">
+      <div class="start-logo-wrap">
+        <div class="start-logo-flight">
+          <picture>
+            <source srcset="{% static 'images/logo_start_512.webp' %}" type="image/webp" />
+            <img class="start-logo start-logo-gold" src="{% static 'images/logo_start_512.png' %}" alt="daxsnack" loading="eager" width="512" height="512" decoding="sync" />
+          </picture>
+        </div>
+      </div>
+    </div>
+    <!-- Hidden SVG filter: selectively desaturate only luminance extremes; midtones stay colored -->
+    <svg width="0" height="0" style="position:absolute; width:0; height:0; overflow:hidden; pointer-events:none;" aria-hidden="true">
+      <defs>
+        <filter id="bwSelective" color-interpolation-filters="sRGB">
+          <!-- Grayscale version of the source -->
+          <feColorMatrix in="SourceGraphic" type="saturate" values="0" result="gray" />
+          <!-- Luminance (in alpha channel) -->
+          <feColorMatrix in="SourceGraphic" type="luminanceToAlpha" result="lum" />
+          <!-- Build a mask that is 1 at very dark/light, 0 near midtones (smooth-ish via table steps) -->
+          <feComponentTransfer in="lum" result="mask">
+            <feFuncA type="table" tableValues="1 0.9 0.7 0.4 0.2 0 0.2 0.4 0.7 0.9 1" />
+          </feComponentTransfer>
+          <!-- Apply mask: grayscale where mask=1 -->
+          <feComposite in="gray" in2="mask" operator="in" result="grayPart" />
+          <!-- Keep original color where mask=0 -->
+          <feComposite in="SourceGraphic" in2="mask" operator="out" result="colorPart" />
+          <!-- Combine colored midtones with grayscale extremes -->
+          <feComposite in="grayPart" in2="colorPart" operator="over" />
+        </filter>
+      </defs>
+    </svg>
+    <header class="header">
+      <nav class="top-nav">
+        <a id="nav-home" href="" class="nav-logo-link" aria-label="reload page">
+          <span class="nav-logo-slot" aria-hidden="true">
+          <picture>
+            <source srcset="{% static 'images/logo_start_512.webp' %}" type="image/webp" />
+            <img class="nav-logo" src="{% static 'images/logo_start_512.png' %}" alt="" width="512" height="512" decoding="async" />
+          </picture>
+          </span>
+        </a>
+        <a id="nav-setup" href="#setup" class="nav-link">setup</a>
+        <span class="nav-sep" aria-hidden="true">|</span>
+        <a id="nav-how" href="#how-it-works" class="nav-link">how it works</a>
+      </nav>
+      <button id="theme-toggle" class="theme-toggle" type="button" aria-label="toggle color theme" title="toggle color theme">
+        <svg class="icon-bulb" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M18 9a6 6 0 10-12 0c0 2.485 1.5 3.5 2.25 4.5.48.64.75 1 .75 2.5h6c0-1.5.27-1.86.75-2.5.75-1 2.25-2.015 2.25-4.5z"/></svg>
+      </button>
+      <button id="lang-toggle" class="lang-toggle" type="button" aria-label="toggle language" title="toggle language">en</button>
+    </header>
+    <main class="layout">
+      <!-- Intro section: golden-ratio grid with left slides and right quick-start -->
+      <section id="intro" class="section section-intro">
+        <div class="intro-inner how-inner">
+          <div class="intro-grid">
+          <!-- Left: guided stepper -->
+          <div class="intro-left">
+            <section class="guide-stepper" data-current-step="1" data-guide-open="false" aria-live="polite">
+              <div class="guide-step-panels">
+                <div class="guide-step-panel is-active" id="guide-panel-1" data-step="1" role="tabpanel">
+                  <div class="start-psych">
+                    <p id="about-1">
+                      <strong>daxsnack</strong> runs the market universe and strategies configured by its operator.
+                    </p>
+                    <p id="about-2">
+                      the operator is responsible for independently validating every strategy before connecting it.
+                    </p>
+                    <p id="about-3">
+                      the daily result is one setup with entry and stop, or no setup.
+                    </p>
+                  </div>
+                </div>
+
+                <div class="guide-step-panel" id="guide-panel-2" data-step="2" role="tabpanel" hidden>
+                  <div class="start-psych">
+                    <h2 class="start-guide-title" id="start-guide-title">follow the setup</h2>
+                    <p id="start-psych-1">check the direction, entry and stop before placing the order.</p>
+                    <p id="start-psych-2">review the published market and apply the risk limits you configured.</p>
+                    <p id="start-psych-3">follow the stop and exit updates shown with the open trade.</p>
+                  </div>
+                </div>
+
+                <div class="guide-step-panel" id="guide-panel-3" data-step="3" role="tabpanel" hidden>
+                  <div class="start-psych">
+                    <h2 class="start-guide-title" id="account-title">execution</h2>
+                    <p id="account-1">connect the market-data and execution provider you choose.</p>
+                    <p id="account-3">test the complete integration in a non-production environment first.</p>
+                  </div>
+                </div>
+
+                <div class="guide-step-panel" id="guide-panel-4" data-step="4" role="tabpanel" hidden>
+                  <div class="start-psych">
+                    <h2 class="start-guide-title" id="basics-title">read the setup</h2>
+                    <p id="basics-1">direction shows long or short.</p>
+                    <p id="basics-2">entry is the trigger price. stop is the price that invalidates the setup.</p>
+                    <p id="basics-3">volume and follow-through support trade management after entry.</p>
+                    <div class="ohlc-wrap-group" style="margin:12px 0 4px 0;">
+                      <div class="ohlc-wrap" role="img" aria-label="Bullish OHLC anatomy">
+                        <svg id="ohlc-svg" viewBox="0 0 320 160" role="img" aria-labelledby="ohlc-title" style="max-width:360px;display:block;align-self:flex-start;">
+                          <title id="ohlc-title">OHLC candle anatomy</title>
+                          <defs>
+                            <linearGradient id="bodyFill" x1="0" x2="0" y1="0" y2="1">
+                              <stop offset="0%" stop-color="#3ecf8e" stop-opacity="0.20" />
+                              <stop offset="100%" stop-color="#3ecf8e" stop-opacity="0.35" />
+                            </linearGradient>
+                          </defs>
+                          <line x1="160" y1="40" x2="160" y2="120" stroke="#3ecf8e" stroke-width="2" />
+                          <rect x="135" y="55" width="50" height="35" fill="url(#bodyFill)" stroke="#3ecf8e" stroke-width="2" rx="4" />
+                          <circle cx="160" cy="40" r="3" fill="#3ecf8e" />
+                          <circle cx="160" cy="55" r="3" fill="#3ecf8e" />
+                          <circle cx="160" cy="90" r="3" fill="#3ecf8e" />
+                          <circle cx="160" cy="120" r="3" fill="#3ecf8e" />
+                        </svg>
+                        <ul class="ohlc-legend">
+                          <li><span id="ohlc-high-text">High</span></li>
+                          <li><span id="ohlc-close-text">Close</span></li>
+                          <li><span id="ohlc-open-text">Open</span></li>
+                          <li><span id="ohlc-low-text">Low</span></li>
+                        </ul>
+                      </div>
+                      <div class="ohlc-wrap ohlc-wrap--bear" role="img" aria-label="Bearish OHLC anatomy">
+                        <svg id="ohlc-svg-bear" viewBox="0 0 320 160" role="img" aria-labelledby="ohlc-title-bear" style="max-width:360px;display:block;align-self:flex-start;">
+                          <title id="ohlc-title-bear">Bearish OHLC candle anatomy</title>
+                          <defs>
+                            <linearGradient id="bodyFillBear" x1="0" x2="0" y1="0" y2="1">
+                              <stop offset="0%" stop-color="#ff6b6b" stop-opacity="0.20" />
+                              <stop offset="100%" stop-color="#ff6b6b" stop-opacity="0.35" />
+                            </linearGradient>
+                          </defs>
+                          <line x1="160" y1="40" x2="160" y2="120" stroke="#ff6b6b" stroke-width="2" />
+                          <rect x="135" y="65" width="50" height="40" fill="url(#bodyFillBear)" stroke="#ff6b6b" stroke-width="2" rx="4" />
+                          <circle cx="160" cy="40" r="3" fill="#ff6b6b" />
+                          <circle cx="160" cy="65" r="3" fill="#ff6b6b" />
+                          <circle cx="160" cy="105" r="3" fill="#ff6b6b" />
+                          <circle cx="160" cy="120" r="3" fill="#ff6b6b" />
+                        </svg>
+                        <ul class="ohlc-legend ohlc-legend--bear">
+                          <li><span id="ohlc-down-high-text">High</span></li>
+                          <li><span id="ohlc-down-open-text">Open</span></li>
+                          <li><span id="ohlc-down-close-text">Close</span></li>
+                          <li><span id="ohlc-down-low-text">Low</span></li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="guide-step-panel" id="guide-panel-5" data-step="5" role="tabpanel" hidden>
+                  <div class="start-psych">
+                    <h2 class="start-guide-title" id="risk-title">risk limits</h2>
+                    <p id="risk-1">define an initial-risk limit appropriate for your system.</p>
+                    <p id="risk-2">define how many positions may be open at the same time.</p>
+                    <p id="risk-3">define a portfolio exposure limit before enabling execution.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="guide-stepper-footer">
+                <button type="button" id="guide-prev" class="guide-nav-btn guide-nav-btn-prev" aria-label="previous" title="previous" disabled>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M15 18l-6-6 6-6"/>
+                  </svg>
+                  <span id="guide-prev-text">previous</span>
+                </button>
+                <div class="guide-stepper-dots" aria-hidden="true">
+                  <span class="guide-step-dot is-active" data-step-dot="1"></span>
+                  <span class="guide-step-dot" data-step-dot="2"></span>
+                  <span class="guide-step-dot" data-step-dot="3"></span>
+                  <span class="guide-step-dot" data-step-dot="4"></span>
+                  <span class="guide-step-dot" data-step-dot="5"></span>
+                </div>
+                <button type="button" id="guide-next" class="guide-nav-btn guide-nav-btn-next" aria-label="next" title="next">
+                  <span id="guide-next-text">next</span>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M9 18l6-6-6-6"/>
+                  </svg>
+                </button>
+              </div>
+            </section>
+          </div>
+
+          <!-- Right: Getting started -->
+          <div class="intro-right money-flash-box">
+            <h2 id="intro-right-title" class="start-guide-title">start here</h2>
+            <ol class="getting-started-list">
+              <li id="how-li-1">
+                read the <a href="#" id="start-guide-link" class="start-guide-link">guide</a>
+              </li>
+              <li>
+                <span id="how-li-2">get the daily setup by email. free.</span>
+                <div class="sotd-field">
+                  <label for="sotd-email" class="sr-only">Email address</label>
+                  <input type="email" id="sotd-email" class="sotd-input" placeholder="you@example.com" />
+                  <div class="sotd-actions">
+                    <button type="button" id="sotd-subscribe" class="sotd-btn">get daily setup</button>
+                    <span id="sotd-status" class="sotd-status" aria-live="polite"></span>
+                  </div>
+                </div>
+              </li>
+              <li id="how-li-3">view today’s setup ↓</li>
+            </ol>
+          </div>
+          </div>
+          <button type="button" id="intro-down" class="intro-down" aria-label="scroll to today's setup" title="scroll to today's setup">
+            <svg class="intro-down-icon" width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M6 9l6 6 6-6"/>
+            </svg>
+          </button>
+        </div>
+      </section>
+
+      <section id="setup" class="section section-setup">
+        <h2 class="sr-only">setup dashboard</h2>
+        <div class="setup-inner how-inner">
+        <div id="content" class="content-grid">
+          <!-- Part 1: TradingView widget (full width) -->
+          <section class="chart-box">
+            <h3 class="sr-only">market chart</h3>
+            <div class="tradingview-widget-container">
+              <div id="tradingview_chart"></div>
+            </div>
+          </section>
+
+          <!-- Parts 2 & 3: Two columns under the chart -->
+          <div class="split-grid">
+            <!-- Left: Today's Setup (existing) -->
+            <section class="text-box today-box">
+              <div class="text-content">
+                <div id="capital-banner" class="alert-banner" style="display:none"></div>
+                <h2 id="inst-name" style="margin-top: 1rem;">—</h2>
+                <div id="today-list" class="running-list"></div>
+                <div id="setup-last-check" class="setup-last-check" style="display:none;"></div>
+                <div class="explain-block" id="explain-block" style="display:none;margin-top:12px;white-space:pre-wrap;color:#384455;"></div>
+                <div id="setup-metrics" class="setup-metrics" style="display:none;"></div>
+                <div class="setup-metrics" id="benchmark-metrics" style="display:none;"></div>
+              </div>
+            </section>
+
+            <!-- Right: Running Trades (previous 1–2 days) + Closed Trades -->
+            <section class="text-box running-box">
+              <div class="text-content">
+                <h2 id="running-title" style="margin-top: 1rem;">open trades</h2>
+                <div id="running-list" class="running-list"></div>
+                <h2 id="closed-title" style="margin-top: 1rem; display:none;">closed trades</h2>
+                <div id="closed-list" class="running-list"></div>
+                <section id="activity-feed" class="activity-feed" style="display:none;"></section>
+              </div>
+              <!-- Account summary anchored at the very bottom of the right panel -->
+              {% if show_account_summary %}
+              <div class="account-bar" id="account-bar-right" style="display:none;">
+                <div class="account-line">
+                  <div class="acc-left">
+                    {% if show_account_total_performance and account_total_delta_pct %}
+                      <div class="account-subline">
+                        <span id="acc-since-right">performance since configured start</span> <span class="acc-value">{{ account_total_delta_pct|floatformat:2 }}%</span>
+                      </div>
+                    {% endif %}
+                    {% if show_est_annual_return %}
+                    <div class="account-subline">
+                      <span class="acc-ann-label" id="acc-ann-label-right">est. annual return</span>
+                      <span class="acc-value" id="acc-ann-value-right">{% if est_annual_return_pct or est_annual_return_pct == 0 %}{{ est_annual_return_pct|floatformat:2 }}%{% else %}—{% endif %}</span>
+                    </div>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+              {% endif %}
+            </section>
+            <!-- Standalone account summary (shown when no running/closed) -->
+            {% if show_account_summary %}
+            <div class="account-bar" id="account-bar-only" style="display:none;">
+              <div class="account-line">
+                <div class="acc-left">
+                  {% if show_account_total_performance and account_total_delta_pct %}
+                    <div class="account-subline">
+                      <span id="acc-since-only">performance since configured start</span> <span class="acc-value">{{ account_total_delta_pct|floatformat:2 }}%</span>
+                    </div>
+                  {% endif %}
+                  {% if show_est_annual_return %}
+                  <div class="account-subline">
+                    <span class="acc-ann-label" id="acc-ann-label-only">est. annual return</span>
+                    <span class="acc-value" id="acc-ann-value-only">{% if est_annual_return_pct or est_annual_return_pct == 0 %}{{ est_annual_return_pct|floatformat:2 }}%{% else %}—{% endif %}</span>
+                  </div>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+        </div>
+      </section>
+
+      <section id="how-it-works" class="section section-how">
+        <div class="how-inner">
+          <h2 id="how-title" class="how-title">your universe. your strategy. your setup.</h2>
+          <p id="how-1" class="how-copy">
+            scan. daily prices are refreshed and every active strategy is run.
+          </p>
+          <p id="how-2" class="how-copy">
+            check. only connect strategies you have independently validated.
+          </p>
+          <p id="how-3" class="how-copy">
+            select. portfolio and account limits determine the setup published for the day.
+          </p>
+
+          <div class="stats-grid">
+            <div class="stat money-flash-box"><span class="stat-num">—</span><span id="stat-instruments-label" class="stat-label">configured instruments</span></div>
+            <div class="stat money-flash-box"><span class="stat-num">—</span><span id="stat-strategies-label" class="stat-label">operator strategies</span></div>
+            <div class="stat money-flash-box"><span class="stat-num" id="stat-daily-num">—</span><span id="stat-daily-label" class="stat-label">candidate combinations</span></div>
+          </div>
+        </div>
+      </section>
+      <!-- FAQ section with accessible accordions -->
+      <section id="faq" class="section section-faq">
+        <div class="faq-inner">
+          <h2 id="faq-title" class="faq-title">frequently asked questions</h2>
+          <div class="faq-list">
+            <!-- FAQ 1 -->
+            <div class="faq-item">
+              <button class="faq-q" id="faq-q-1" type="button" aria-expanded="false" aria-controls="faq-a-1">
+                <span class="faq-label" id="faq-q1-label">how is a setup selected?</span>
+                <span class="faq-icon" aria-hidden="true"></span>
+              </button>
+              <div class="faq-a" id="faq-a-1" role="region" aria-labelledby="faq-q-1" hidden>
+                <div id="faq-a2e-1">
+                  <p>
+                    this public application displays the output of your configured provider. strategy design, validation and portfolio rules remain your responsibility.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- FAQ 2 -->
+            <div class="faq-item">
+              <button class="faq-q" id="faq-q-2" type="button" aria-expanded="false" aria-controls="faq-a-2">
+                <span class="faq-label" id="faq-q2-label">why is there no setup today?</span>
+                <span class="faq-icon" aria-hidden="true"></span>
+              </button>
+              <div class="faq-a" id="faq-a-2" role="region" aria-labelledby="faq-q-2" hidden>
+                <div id="faq-a2e-2">
+                  <p>
+                    your provider may return no candidate. in that case the daily result is “no setup today.”
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- FAQ 3 -->
+            <div class="faq-item">
+              <button class="faq-q" id="faq-q-3" type="button" aria-expanded="false" aria-controls="faq-a-3">
+                <span class="faq-label" id="faq-q3-label">how are strategies validated?</span>
+                <span class="faq-icon" aria-hidden="true"></span>
+              </button>
+              <div class="faq-a" id="faq-a-3" role="region" aria-labelledby="faq-q-3" hidden>
+                <div id="faq-a2e-3">
+                  <p>
+                    the public repository does not include a strategy or validation rules. create and validate your own before connecting it.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- FAQ 4 -->
+            <div class="faq-item">
+              <button class="faq-q" id="faq-q-4" type="button" aria-expanded="false" aria-controls="faq-a-4">
+                <span class="faq-label" id="faq-q4-label">what do i execute?</span>
+                <span class="faq-icon" aria-hidden="true"></span>
+              </button>
+              <div class="faq-a" id="faq-a-4" role="region" aria-labelledby="faq-q-4" hidden>
+                <div id="faq-a2e-4">
+                  <p>
+                    choose your own execution provider, position sizing and protective controls. start with simulated execution.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Sticky disclaimer (localized, closable, persisted) -->
+    <div id="disclaimer" class="disclaimer" style="display:none;">
+      <div class="disclaimer-inner">
+        <div class="disclaimer-copy">
+          <span class="disclaimer-line">
+            <strong id="disclaimer-label" class="disclaimer-label">risk disclaimer:</strong>
+            <span id="disclaimer-summary" class="disclaimer-summary"></span>
+          </span>
+          <span id="disclaimer-details" class="disclaimer-details"></span>
+          <button id="disclaimer-toggle" class="disclaimer-toggle" type="button" aria-expanded="false">more</button>
+        </div>
+        <button id="disclaimer-close" class="disclaimer-close" type="button" aria-label="close" title="close">close</button>
+      </div>
+    </div>
+
+    <footer class="site-footer">
+      <small class="footer-meta footer-meta-left">
+        <span class="footer-tech-strip">
+          <span class="footer-tech" title="Linux">
+            <img class="footer-tech-logo footer-tech-logo-tux" src="{% static 'images/tech/tux.gif' %}" width="327" height="360" alt="Linux" />
+          </span>
+          <span class="footer-tech" title="Python">
+            <img class="footer-tech-logo footer-tech-logo-python" src="{% static 'images/tech/python-logo-only.svg' %}" width="111" height="135" alt="Python" />
+            <span class="footer-tech-tm" aria-hidden="true">™</span>
+          </span>
+          <span class="footer-tech" title="HTML5">
+            <img class="footer-tech-logo footer-tech-logo-html5" src="{% static 'images/tech/html5-badge.svg' %}" width="512" height="512" alt="HTML5" />
+          </span>
+          <span class="footer-tech" title="JavaScript">
+            <img class="footer-tech-logo footer-tech-logo-javascript" src="{% static 'images/tech/javascript-community.svg' %}" width="630" height="630" alt="JavaScript" />
+          </span>
+        </span>
+      </small>
+      <small class="footer-meta footer-meta-center">
+        <a href="#" id="impressum-link" class="footer-link">Impressum</a>
+        <span class="footer-sep">|</span>
+        <a href="#" id="licenses-link" class="footer-link">Licenses</a>
+      </small>
+      <span class="footer-meta footer-meta-right">
+        <span class="version-line">
+          <span class="footer-copy">©&nbsp;{{ site_author }}&nbsp;|&nbsp;{{ site_url }}</span>
+          {% if version_display %}
+            <span class="footer-sep">|</span>
+            <span class="footer-copy">ver.</span>&nbsp;<span class="acc-value">{{ version_display }}</span>
+          {% endif %}
+        </span>
+      </span>
+      <!-- Subtle watermark logo at bottom-right in flow -->
+      <img class="page-watermark" src="{% static 'images/logo_watermark_320.webp' %}" srcset="{% static 'images/logo_watermark_320.webp' %} 320w, {% static 'images/logo_watermark_640.webp' %} 640w" sizes="(max-width: 600px) 38vw, 28vw" width="640" height="640" loading="lazy" decoding="async" alt="" aria-hidden="true" />
+    </footer>
+
+    <!-- Impressum Modal -->
+    <div id="impressum-modal" class="impressum-modal" role="dialog" aria-modal="true" aria-labelledby="impressum-title" style="display: none;">
+      <div class="impressum-card" tabindex="-1">
+        <button type="button" class="impressum-close" aria-label="schließen" title="schließen">×</button>
+        <h3 id="impressum-title">Impressum</h3>
+        <div class="impressum-content"></div>
+      </div>
+    </div>
+
+    <div id="licenses-modal" class="impressum-modal licenses-modal" role="dialog" aria-modal="true" aria-labelledby="licenses-title" style="display: none;">
+      <div class="impressum-card licenses-card" tabindex="-1">
+        <button type="button" class="impressum-close licenses-close" aria-label="close" title="close">×</button>
+        <h3 id="licenses-title">Licenses</h3>
+        <div class="licenses-content"></div>
+      </div>
+    </div>
+
+    {{ frontend_data|json_script:"ds-data" }}
+    <script defer src="{% static 'js/app.js' %}"></script>
+
+  </body>
+</html>

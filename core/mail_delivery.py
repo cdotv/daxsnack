@@ -33,12 +33,7 @@ def build_multipart_message(*, subject: str, text: str, html: str, to: str):
 
 
 def build_subscriber_message(
-    *,
-    subject: str,
-    text: str,
-    html: str,
-    subscription,
-    site_url: str,
+    *, subject: str, text: str, html: str, subscription, site_url: str
 ):
     one_click_url = build_one_click_unsubscribe_link(subscription, site_url)
     message = build_multipart_message(
@@ -47,9 +42,15 @@ def build_subscriber_message(
         html=html,
         to=subscription.email,
     )
+    host = urlsplit(site_url).hostname or "example.com"
+    list_id = getattr(
+        settings,
+        "SUBSCRIBER_LIST_ID",
+        f"daxsnack subscriber alerts <alerts.{host.removeprefix('www.')}>",
+    )
     message.extra_headers.update(
         {
-            "List-ID": "daxsnack subscriber alerts <alerts.daxsnack.com>",
+            "List-ID": list_id,
             "List-Unsubscribe": f"<{one_click_url}>",
             "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
             "X-Auto-Response-Suppress": "All",
