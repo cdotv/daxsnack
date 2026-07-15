@@ -30,6 +30,11 @@ python -m black --check .
 python -m unittest discover -s tests
 ```
 
+## Release checks
+
+Every revision passes secret scanning, formatting, tests, CI, and CodeQL before
+it reaches the protected `main` branch.
+
 ## License and attribution
 
 The source is licensed under the Apache License, Version 2.0. Redistributed
