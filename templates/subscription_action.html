@@ -5,16 +5,16 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex,nofollow,noarchive" />
-    <title>{{ title }} | daxsnack</title>
+    <title>{{ title }} | {{ site_profile.name }}</title>
     <link rel="icon" href="{% static 'images/favicon.ico' %}" sizes="any" />
     <script src="{% static 'js/theme_bootstrap.js' %}"></script>
     <link rel="stylesheet" href="{% static 'css/style.min.css' %}" />
   </head>
   <body class="subscription-action-page">
     <main class="subscription-action-main">
-      <a class="subscription-action-brand" href="/" aria-label="daxsnack">
-        <img src="{% static 'images/logo_start_512.webp' %}" alt="daxsnack" />
-        <span>daxsnack</span>
+      <a class="subscription-action-brand" href="/" aria-label="{{ site_profile.name }}">
+        <img src="{% static 'images/logo_start_512.webp' %}" alt="{{ site_profile.name }}" />
+        <span>{{ site_profile.name }}</span>
       </a>
       <section class="subscription-action-panel" aria-labelledby="subscription-action-title">
         <h1 id="subscription-action-title">{{ title }}</h1>

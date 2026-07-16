@@ -20,10 +20,13 @@
   const benchmarkSnapshotUrl = (data.benchmarkSnapshotUrl !== undefined) ? data.benchmarkSnapshotUrl : null;
   const openTradesSnapshotUrl = (data.openTradesSnapshotUrl !== undefined) ? data.openTradesSnapshotUrl : null;
   const accountTotalDeltaPct = (data.accountTotalDeltaPct !== undefined) ? data.accountTotalDeltaPct : null;
-  const siteOwner = (data.siteOwner && typeof data.siteOwner === 'object') ? data.siteOwner : {};
-  const BENCHMARK_LABELS = {
-    DAXSNACK: 'daxsnack',
-  };
+  const siteProfile = (data.siteProfile && typeof data.siteProfile === 'object') ? data.siteProfile : {};
+  const siteOwner = (siteProfile.owner && typeof siteProfile.owner === 'object') ? siteProfile.owner : {};
+  const systemName = String(siteProfile.name || 'open trading system');
+  const systemTitle = String(siteProfile.title || 'Open Trading System');
+  const systemBenchmarkKey = String(siteProfile.benchmarkKey || 'system').toLowerCase();
+  const BENCHMARK_LABELS = {};
+  BENCHMARK_LABELS[systemBenchmarkKey.toUpperCase()] = systemName;
   let benchPollStarted = false;
   let openTradesPollStarted = false;
   let openTradesRenderPending = false;
@@ -101,8 +104,8 @@
             disclaimer_close: 'close',
             disclaimer_more: 'more',
             disclaimer_less: 'less',
-            about_1: 'daxsnack runs the market universe and strategies configured by its operator.',
-            about_1_html: '<strong>daxsnack</strong> runs the market universe and strategies configured by its operator.',
+            about_1: systemName + ' runs the market universe and strategies configured by its operator.',
+            about_1_html: '<strong>' + escapeHtml(systemName) + '</strong> runs the market universe and strategies configured by its operator.',
             about_2: 'the operator is responsible for independently validating every connected strategy.',
             about_3: 'the daily result is one setup with entry and stop, or no setup.',
             how_title: 'your universe. your strategy. your setup.',
@@ -144,7 +147,7 @@
             activity_outcome_loss: 'loser',
             activity_outcome_closed: 'closed',
             metrics_heading: 'strategy metrics',
-            metrics_overall: 'daxsnack',
+            metrics_overall: systemName,
             metrics_weight: 'weight',
             metrics_sharpe_ratio: 'sharpe ratio',
             metrics_volatility: 'volatility',
@@ -256,8 +259,8 @@
             disclaimer_close: 'schließen',
             disclaimer_more: 'mehr',
             disclaimer_less: 'weniger',
-            about_1: 'daxsnack nutzt das marktuniversum und die strategien des betreibers.',
-            about_1_html: '<strong>daxsnack</strong> nutzt das marktuniversum und die strategien des betreibers.',
+            about_1: systemName + ' nutzt das marktuniversum und die strategien des betreibers.',
+            about_1_html: '<strong>' + escapeHtml(systemName) + '</strong> nutzt das marktuniversum und die strategien des betreibers.',
             about_2: 'der betreiber muss jede angebundene strategie unabhängig validieren.',
             about_3: 'das tagesergebnis ist ein setup mit einstieg und stopp oder kein setup.',
             how_title: 'dein universum. deine strategie. dein setup.',
@@ -299,7 +302,7 @@
             activity_outcome_loss: 'verlierer',
             activity_outcome_closed: 'geschlossen',
             metrics_heading: 'strategie-kennzahlen',
-            metrics_overall: 'daxsnack',
+            metrics_overall: systemName,
             metrics_weight: 'Gewicht',
             metrics_sharpe_ratio: 'Sharpe-Ratio',
             metrics_volatility: 'Volatilität',
@@ -742,7 +745,7 @@
             <p><a href="${TUX_SOURCE_URL}" target="_blank" rel="noopener">Originale Tux-Quelle</a> · <a href="${LINUX_MARK_URL}" target="_blank" rel="noopener">Linux-Mark-Richtlinien</a></p>
             <h4>Python-Logo</h4>
             <p>Es wird das offizielle, unveränderte Python-Logo verwendet, um auf die Programmiersprache Python hinzuweisen.</p>
-            <p>„Python“ und die Python-Logos sind Marken oder eingetragene Marken der Python Software Foundation und werden von daxsnack.com mit Genehmigung der Foundation verwendet.</p>
+            <p>„Python“ und die Python-Logos sind Marken oder eingetragene Marken der Python Software Foundation und werden von diesem Website-Betreiber mit Genehmigung der Foundation verwendet.</p>
             <p><a href="${PYTHON_POLICY_URL}" target="_blank" rel="noopener">PSF Trademark Policy</a> · <a href="${PYTHON_LOGO_URL}" target="_blank" rel="noopener">Offizielle Logo-Assets</a></p>
             <h4>HTML5-Logo</h4>
             <p>Es wird das offizielle HTML5-Badge gemäß den W3C-HTML5-Logo-Bedingungen verwendet.</p>
@@ -764,7 +767,7 @@
             <p><a href="${TUX_SOURCE_URL}" target="_blank" rel="noopener">Original Tux source</a> · <a href="${LINUX_MARK_URL}" target="_blank" rel="noopener">Linux mark guidelines</a></p>
             <h4>Python logo</h4>
             <p>The official unaltered Python logo is used to refer to the Python programming language.</p>
-            <p>“Python” and the Python logos are trademarks or registered trademarks of the Python Software Foundation and are used by daxsnack.com with permission from the Foundation.</p>
+            <p>“Python” and the Python logos are trademarks or registered trademarks of the Python Software Foundation and are used by this site operator with permission from the Foundation.</p>
             <p><a href="${PYTHON_POLICY_URL}" target="_blank" rel="noopener">PSF trademark policy</a> · <a href="${PYTHON_LOGO_URL}" target="_blank" rel="noopener">Official logo assets</a></p>
             <h4>HTML5 logo</h4>
             <p>The official HTML5 badge is used under the W3C HTML5 logo terms.</p>
@@ -1278,7 +1281,7 @@
             subheading = '';
           }
           if (!subheading && isOverallOnly) {
-            subheading = dict.metrics_overall || 'daxsnack';
+            subheading = dict.metrics_overall || systemName;
           }
           // For multiple setups of the day, avoid a single subheading that
           // concatenates all instruments. Instead, each setup will get its own
@@ -1469,9 +1472,9 @@
             const width = Math.max(3, Math.min(100, (Math.abs(v) / maxAbs) * 100));
             const cls = v >= 0 ? 'pos' : 'neg';
             const txt = v.toFixed(2) + '%';
-            const isDax = (labelKey === 'daxsnack');
-            const labelCls = isDax ? 'metric-label metric-label-em' : 'metric-label';
-            const badgeCls = isDax ? 'metric-badge metric-badge-em' : 'metric-badge';
+            const isSystem = (labelKey === systemBenchmarkKey);
+            const labelCls = isSystem ? 'metric-label metric-label-em' : 'metric-label';
+            const badgeCls = isSystem ? 'metric-badge metric-badge-em' : 'metric-badge';
             return (
               '<div class="metric-line chart-line">' +
                 '<span class="' + labelCls + '">' + localizedLabel + '</span>' +
@@ -1583,7 +1586,7 @@
               if (!isFinite(pct)) return;
               const label = BENCHMARK_LABELS[keyRaw];
               out.push({
-                key: (keyRaw === 'DAXSNACK') ? 'daxsnack' : keyRaw,
+                key: (keyRaw === systemBenchmarkKey.toUpperCase()) ? systemBenchmarkKey : keyRaw,
                 label: label,
                 pct: pct,
               });
@@ -2185,7 +2188,7 @@
           setTopTVSymbol(tvsym);
 
           // Keep page title constant for branding/SEO
-          document.title = 'daxsnack | one daily trade setup';
+          document.title = systemTitle;
         }
 
         function renderOtherSetups(agg, best, listEl, orderCollector) {

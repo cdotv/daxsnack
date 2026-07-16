@@ -19,6 +19,7 @@ from core.mail_delivery import build_multipart_message
 from core.models import Subscription
 from core.privacy import subscriber_log_id
 from core.setup_provider import load_home_payload
+from core.site_profile import get_site_profile
 from core.subscription_tokens import (
     SubscriptionTokenError,
     build_confirmation_link,
@@ -86,6 +87,7 @@ def form_tokens(request):
 @ensure_csrf_cookie
 def best_trade(request):
     payload = load_home_payload(request)
+    site_profile = get_site_profile()
     show_total = bool(getattr(settings, "SHOW_ACCOUNT_TOTAL_PERFORMANCE", False))
     show_annual = bool(getattr(settings, "SHOW_EST_ANNUAL_RETURN", False))
     total_delta = payload.get("account_total_delta_pct")
@@ -105,8 +107,7 @@ def best_trade(request):
             or (show_annual and annual_return is not None),
             "est_annual_return_pct": annual_return,
             "version_display": payload.get("version_display"),
-            "site_author": settings.SITE_AUTHOR,
-            "site_url": settings.SITE_URL,
+            "site_profile": site_profile,
             "frontend_data": {
                 "injectedSetup": payload.get("setup_payload"),
                 "injectedDaySetups": payload.get("day_setups_payload"),
@@ -120,11 +121,7 @@ def best_trade(request):
                 "benchmarkSnapshotUrl": "/api/live/benchmarks/",
                 "openTradesSnapshotUrl": "/api/live/open-trades/",
                 "accountTotalDeltaPct": total_delta,
-                "siteOwner": {
-                    "name": settings.SITE_AUTHOR,
-                    "address": settings.SITE_OWNER_ADDRESS,
-                    "email": settings.CONTACT_EMAIL,
-                },
+                "siteProfile": site_profile,
             },
         },
     )
@@ -255,7 +252,7 @@ def subscribe(request):
     safe_link = escape(confirm_link, quote=True)
     try:
         message = build_multipart_message(
-            subject="Confirm your daxsnack subscription",
+            subject=f"Confirm your {get_site_profile()['name']} subscription",
             text=(
                 "Confirm your email to receive setup notifications.\n\n"
                 f"Confirm: {confirm_link}\n\n"
@@ -277,7 +274,7 @@ def subscribe(request):
 
 _SUBSCRIPTION_ACTION_COPY = {
     "en": {
-        "home": "return to daxsnack",
+        "home": "return to the open trading system",
         "invalid_title": "invalid link",
         "invalid_message": "this link is invalid or has expired.",
         "confirm_title": "confirm subscription",
@@ -292,7 +289,7 @@ _SUBSCRIPTION_ACTION_COPY = {
         "unsubscribed_message": "you will no longer receive emails.",
     },
     "de": {
-        "home": "zurueck zu daxsnack",
+        "home": "zurueck zum offenen handelssystem",
         "invalid_title": "ungueltiger link",
         "invalid_message": "dieser link ist ungueltig oder abgelaufen.",
         "confirm_title": "abonnement bestaetigen",
@@ -333,6 +330,7 @@ def _subscription_action_response(
             "form_action": form_action,
             "button_label": copy.get(button_key) if button_key else None,
             "token": token,
+            "site_profile": get_site_profile(),
         },
         status=status,
     )

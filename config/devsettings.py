@@ -11,10 +11,10 @@ EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
-        "LOCATION": "daxsnack-public-development",
+        "LOCATION": "open-trading-system-development",
     },
     "ratelimit": {
         "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
-        "LOCATION": "daxsnack-public-ratelimit",
+        "LOCATION": "open-trading-system-ratelimit",
     },
 }

@@ -61,7 +61,7 @@ def _validate_payload(value) -> dict:
 def load_home_payload(request) -> dict:
     """Load the configured operator callable, or return an empty dashboard."""
     provider_path = str(
-        getattr(settings, "DAXSNACK_HOME_PAYLOAD_PROVIDER", "") or ""
+        getattr(settings, "TRADING_SYSTEM_HOME_PAYLOAD_PROVIDER", "") or ""
     ).strip()
     if not provider_path:
         return empty_home_payload()
@@ -69,7 +69,7 @@ def load_home_payload(request) -> dict:
         provider = import_string(provider_path)
     except ImportError as exc:
         raise ImproperlyConfigured(
-            "DAXSNACK_HOME_PAYLOAD_PROVIDER is not importable."
+            "TRADING_SYSTEM_HOME_PAYLOAD_PROVIDER is not importable."
         ) from exc
     if not callable(provider):
         raise ImproperlyConfigured(

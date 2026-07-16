@@ -124,6 +124,19 @@ class PublicApplicationTests(SimpleTestCase):
         paths = [path.relative_to(ROOT).as_posix().lower() for path in ROOT.rglob("*")]
         self.assertFalse(any("backtest" in path for path in paths))
 
+    def test_private_project_identity_is_absent_from_public_text(self):
+        forbidden = ("dax" + "snack", "christopher" + " vogt")
+        for path in ROOT.rglob("*"):
+            if not path.is_file() or ".git" in path.parts:
+                continue
+            try:
+                text = path.read_text(encoding="utf-8").casefold()
+            except UnicodeDecodeError:
+                continue
+            for value in forbidden:
+                with self.subTest(path=path, value=value):
+                    self.assertNotIn(value, text)
+
     def test_frontend_avoids_codeql_blocking_patterns(self):
         loader = (ROOT / "static" / "js" / "app.js").read_text(encoding="utf-8")
         frontend = (ROOT / "static" / "js" / "app_main.js").read_text(encoding="utf-8")

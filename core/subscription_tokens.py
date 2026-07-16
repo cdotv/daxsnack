@@ -1,17 +1,18 @@
 from urllib.parse import urlencode
 
+from django.conf import settings
 from django.core import signing
 
 CONFIRMATION_MAX_AGE_SECONDS = 7 * 24 * 60 * 60
 _TOKEN_VERSION = 1
 _TOKEN_CONFIG = {
     "confirm": {
-        "salt": "daxsnack.subscription.confirm.v1",
+        "salt": "open-trading-system.subscription.confirm.v1",
         "path": "/subscribe/confirm/",
         "max_age": CONFIRMATION_MAX_AGE_SECONDS,
     },
     "unsubscribe": {
-        "salt": "daxsnack.subscription.unsubscribe.v1",
+        "salt": "open-trading-system.subscription.unsubscribe.v1",
         "path": "/unsubscribe/",
         "max_age": None,
     },
@@ -24,9 +25,15 @@ class SubscriptionTokenError(ValueError):
 
 def _token_config(purpose):
     try:
-        return _TOKEN_CONFIG[purpose]
+        config = dict(_TOKEN_CONFIG[purpose])
     except KeyError as exc:
         raise SubscriptionTokenError("Unsupported subscription token purpose.") from exc
+    configured_salts = getattr(settings, "SUBSCRIPTION_TOKEN_SALTS", {})
+    if isinstance(configured_salts, dict):
+        salt = str(configured_salts.get(purpose) or "").strip()
+        if salt:
+            config["salt"] = salt
+    return config
 
 
 def make_subscription_token(subscription, purpose):

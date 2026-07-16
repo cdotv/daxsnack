@@ -23,12 +23,19 @@ if not DEBUG and (
 ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="127.0.0.1,localhost", cast=Csv())
 CSRF_TRUSTED_ORIGINS = config("CSRF_TRUSTED_ORIGINS", default="", cast=Csv())
 
-SITE_URL = config("SITE_URL", default="https://daxsnack.com").rstrip("/")
-SITE_AUTHOR = config("SITE_AUTHOR", default="Christopher Vogt")
+SITE_NAME = config("SITE_NAME", default="open trading system").strip()
+SITE_TITLE = config("SITE_TITLE", default="Open Trading System").strip()
+SITE_DESCRIPTION = config(
+    "SITE_DESCRIPTION",
+    default="A self-hostable dashboard for operator-provided trading setups.",
+).strip()
+SITE_URL = config("SITE_URL", default="https://example.com").rstrip("/")
+SITE_OWNER_NAME = config("SITE_OWNER_NAME", default="Example Operator").strip()
 SITE_OWNER_ADDRESS = config("SITE_OWNER_ADDRESS", default="")
 CONTACT_EMAIL = config("CONTACT_EMAIL", default="contact@example.com")
-DAXSNACK_HOME_PAYLOAD_PROVIDER = config(
-    "DAXSNACK_HOME_PAYLOAD_PROVIDER", default=""
+SYSTEM_BENCHMARK_KEY = config("SYSTEM_BENCHMARK_KEY", default="system").strip()
+TRADING_SYSTEM_HOME_PAYLOAD_PROVIDER = config(
+    "TRADING_SYSTEM_HOME_PAYLOAD_PROVIDER", default=""
 ).strip()
 SHOW_ACCOUNT_TOTAL_PERFORMANCE = config(
     "SHOW_ACCOUNT_TOTAL_PERFORMANCE", default=False, cast=bool
@@ -69,6 +76,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "core.site_profile.site_profile_context",
             ]
         },
     }
@@ -153,9 +161,13 @@ EMAIL_USE_TLS = config("EMAIL_USE_TLS", default=True, cast=bool)
 EMAIL_HOST_USER = config("EMAIL_HOST_USER", default="")
 EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD", default="")
 DEFAULT_FROM_EMAIL = config(
-    "DEFAULT_FROM_EMAIL", default="daxsnack <contact@example.com>"
+    "DEFAULT_FROM_EMAIL", default="Open Trading System <contact@example.com>"
 )
-EMAIL_FROM_NAME = config("EMAIL_FROM_NAME", default="daxsnack")
+EMAIL_FROM_NAME = config("EMAIL_FROM_NAME", default="Open Trading System")
+SUBSCRIBER_LIST_ID = config(
+    "SUBSCRIBER_LIST_ID",
+    default="open trading system subscriber alerts <alerts.example.com>",
+)
 NOTIFY_EMAIL = config("NOTIFY_EMAIL", default="")
 EMAIL_TIMEOUT = config("EMAIL_TIMEOUT", default=20, cast=int)
 
@@ -173,25 +185,25 @@ redis_url = config("RATELIMIT_REDIS_URL", default="").strip()
 CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
-        "LOCATION": "daxsnack-public-default",
+        "LOCATION": "open-trading-system-default",
     }
 }
 if redis_url:
     CACHES["ratelimit"] = {
         "BACKEND": "django.core.cache.backends.redis.RedisCache",
         "LOCATION": redis_url,
-        "KEY_PREFIX": "daxsnack-public-ratelimit",
+        "KEY_PREFIX": "open-trading-system-ratelimit",
     }
 else:
     CACHES["ratelimit"] = {
         "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
-        "LOCATION": "daxsnack-public-ratelimit",
+        "LOCATION": "open-trading-system-ratelimit",
     }
 
 RATELIMIT_USE_CACHE = "ratelimit"
 RATELIMIT_IP_META_KEY = "core.ratelimit.get_client_ip"
 RATELIMIT_FAIL_OPEN = False
-RATELIMIT_CACHE_PREFIX = "daxsnack-public-rl:"
+RATELIMIT_CACHE_PREFIX = "open-trading-system-rl:"
 
 # Optional Capital.com adapter configuration. No credential values are stored here.
 CAPITAL_API_KEY = config("CAPITAL_API_KEY", default="")

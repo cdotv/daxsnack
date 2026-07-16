@@ -1,5 +1,6 @@
-daxsnack
-Copyright 2026 Christopher Vogt
+Open Trading System
+Copyright 2026 Open Trading System contributors
 
-The original author of this software is Christopher Vogt.
-The project website is https://daxsnack.com.
+This distribution contains a reusable public web application. Project-specific
+strategies, backtests, data, production configuration, and private operational
+material are not part of this distribution.

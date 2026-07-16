@@ -9,7 +9,9 @@ from core.subscription_tokens import build_one_click_unsubscribe_link
 
 def branded_from_email() -> str:
     configured_name, address = parseaddr(settings.DEFAULT_FROM_EMAIL)
-    display_name = configured_name or getattr(settings, "EMAIL_FROM_NAME", "daxsnack")
+    display_name = configured_name or getattr(
+        settings, "EMAIL_FROM_NAME", "Open Trading System"
+    )
     return formataddr((display_name, address), charset="utf-8")
 
 
@@ -33,7 +35,12 @@ def build_multipart_message(*, subject: str, text: str, html: str, to: str):
 
 
 def build_subscriber_message(
-    *, subject: str, text: str, html: str, subscription, site_url: str
+    *,
+    subject: str,
+    text: str,
+    html: str,
+    subscription,
+    site_url: str,
 ):
     one_click_url = build_one_click_unsubscribe_link(subscription, site_url)
     message = build_multipart_message(
@@ -42,15 +49,13 @@ def build_subscriber_message(
         html=html,
         to=subscription.email,
     )
-    host = urlsplit(site_url).hostname or "example.com"
-    list_id = getattr(
-        settings,
-        "SUBSCRIBER_LIST_ID",
-        f"daxsnack subscriber alerts <alerts.{host.removeprefix('www.')}>",
-    )
     message.extra_headers.update(
         {
-            "List-ID": list_id,
+            "List-ID": getattr(
+                settings,
+                "SUBSCRIBER_LIST_ID",
+                "open trading system subscriber alerts <alerts.example.com>",
+            ),
             "List-Unsubscribe": f"<{one_click_url}>",
             "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
             "X-Auto-Response-Suppress": "All",

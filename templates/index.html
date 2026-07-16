@@ -4,9 +4,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>daxsnack | self-hosted setup dashboard</title>
-    <meta name="description" content="A self-hosted daxsnack dashboard connected to an operator-provided strategy." />
-    <meta name="author" content="{{ site_author }}" />
+    <title>{{ site_profile.title }}</title>
+    <meta name="description" content="{{ site_profile.description }}" />
+    <meta name="author" content="{{ site_profile.owner.name }}" />
     <meta name="contact-ts" content="{{ contact_ts }}" />
     <meta name="contact-sig" content="{{ contact_sig }}" />
     <meta name="subscribe-ts" content="{{ subscribe_ts }}" />
@@ -30,7 +30,7 @@
         <div class="start-logo-flight">
           <picture>
             <source srcset="{% static 'images/logo_start_512.webp' %}" type="image/webp" />
-            <img class="start-logo start-logo-gold" src="{% static 'images/logo_start_512.png' %}" alt="daxsnack" loading="eager" width="512" height="512" decoding="sync" />
+            <img class="start-logo start-logo-gold" src="{% static 'images/logo_start_512.png' %}" alt="{{ site_profile.name }}" loading="eager" width="512" height="512" decoding="sync" />
           </picture>
         </div>
       </div>
@@ -87,7 +87,7 @@
                 <div class="guide-step-panel is-active" id="guide-panel-1" data-step="1" role="tabpanel">
                   <div class="start-psych">
                     <p id="about-1">
-                      <strong>daxsnack</strong> runs the market universe and strategies configured by its operator.
+                      <strong>{{ site_profile.name }}</strong> runs the market universe and strategies configured by its operator.
                     </p>
                     <p id="about-2">
                       the operator is responsible for independently validating every strategy before connecting it.
@@ -447,7 +447,7 @@
       </small>
       <span class="footer-meta footer-meta-right">
         <span class="version-line">
-          <span class="footer-copy">©&nbsp;{{ site_author }}&nbsp;|&nbsp;{{ site_url }}</span>
+          <span class="footer-copy">©&nbsp;{{ site_profile.owner.name }}&nbsp;|&nbsp;{{ site_profile.url }}</span>
           {% if version_display %}
             <span class="footer-sep">|</span>
             <span class="footer-copy">ver.</span>&nbsp;<span class="acc-value">{{ version_display }}</span>

@@ -26,7 +26,7 @@ _DISABLED_VALUES = {
 
 
 def _configured_thread_limit(default: str) -> str | None:
-    raw = os.environ.get("DAXSNACK_NUMERIC_THREADS", default).strip()
+    raw = os.environ.get("TRADING_SYSTEM_NUMERIC_THREADS", default).strip()
     if raw.lower() in _DISABLED_VALUES:
         return None
     return raw
