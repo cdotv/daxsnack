@@ -1,56 +1,42 @@
 # Open Trading System
 
-A self-hostable Django dashboard for publishing operator-provided trading setups. It provides the reusable application around a trading
-system while leaving strategy research and validation to each operator.
+This repository contains the reusable web application behind the
+daxsnack trading system.
 
-All names, URLs, contacts, markets, prices, dates, and performance values in
-this repository are generic examples. Configure your own identity and data
-before publishing a deployment.
+- Live website: [https://daxsnack.com](https://daxsnack.com)
+- Author: Christopher Vogt
 
-## Public-source boundary
+The project is intended for people who want to host their own trading system
+with a strategy and backtests they have developed and validated themselves.
+It is not a ready-made trading strategy.
 
-This repository contains the reusable Django application, models and
-migrations, frontend source and assets, subscriptions and email handling,
-generic broker adapters, and reviewed market-data and position-management
-commands.
+## What is included
 
-It intentionally does **not** contain:
+- Django configuration, URLs, models, and migrations
+- the browser interface and static assets
+- email subscriptions and contact handling
+- generic market-data, broker, and position-management components
+- a strict provider interface for supplying dashboard data
+- tests and production-oriented security defaults
 
-- `core/strategies/` or strategy rules, parameters, filters, rankings,
-  entry/exit logic, or portfolio-selection logic;
-- `data/`, market or account records, or generated results;
-- backtests, optimizers, simulations, acceptance decisions, or performance
-  evidence; or
-- production credentials, private host paths, schedules, personal data, logs,
-  generated minified bundles, or backups.
+## What is not included
 
-The export is default-deny. Only files named in the private export manifest are
-copied. Public-only adapters replace production components where sharing the
-source would cross that boundary. Secret scanning, identity checks, formatting,
-tests, CI, and CodeQL must pass before a public revision reaches `main`.
+- `core/strategies/` and all private strategy rules or parameters
+- `data/`, account records, market history, and generated results
+- backtests, optimizers, simulations, and performance evidence
+- production credentials, server paths, schedules, logs, and backups
 
-## Configure identity once
+The public application starts with an empty dashboard. Example names, contacts,
+markets, prices, dates, and results are placeholders and must be replaced before
+publishing an instance.
 
-Branding and example identity are configuration, not values embedded throughout
-the application. Start from `.env.example` and set `SITE_NAME`, `SITE_TITLE`,
-`SITE_DESCRIPTION`, `SITE_URL`, `SITE_OWNER_NAME`, `SITE_OWNER_ADDRESS`, and
-`CONTACT_EMAIL`. The checked-in defaults use open trading system,
-https://example.com, and contact@example.com.
+## Connect your strategy
 
-README, notice, and environment examples are rendered from one validated
-metadata table during the private-to-public export. The export refuses unknown
-template variables, non-example public identities, unresolved placeholders,
-credentials, and private project identities. This keeps routine source updates
-automatic without silently rewriting arbitrary code.
+Keep your strategy and research in a separate private package. Expose only the
+data needed by the dashboard through a Python callable and set its dotted path
+in `TRADING_SYSTEM_HOME_PAYLOAD_PROVIDER`.
 
-## Bring your own strategy and backtests
-
-The application starts in a safe empty-dashboard state. Develop and
-independently backtest your own strategy in a separate private package, then
-expose only its display payload through a Python callable. Configure its dotted
-path with `TRADING_SYSTEM_HOME_PAYLOAD_PROVIDER`.
-
-For example, an installed private module could expose:
+Example provider:
 
 ```python
 def get_home_payload(request):
@@ -74,17 +60,17 @@ def get_home_payload(request):
     }
 ```
 
-Then set:
+Configure the provider in `.env`:
 
 ```dotenv
 TRADING_SYSTEM_HOME_PAYLOAD_PROVIDER=my_private_package.provider.get_home_payload
 ```
 
-The provider must return strict JSON-compatible data and is constrained by
-`core/setup_provider.py`. The example values above are synthetic placeholders,
-not a strategy or recommendation.
+The provider must return strict JSON-compatible data accepted by
+`core/setup_provider.py`. It should not expose strategy internals, credentials,
+or private records.
 
-## Local setup
+## Installation
 
 Python 3.11 or newer is recommended.
 
@@ -96,20 +82,43 @@ cp .env.example .env
 python -c "import secrets; print(secrets.token_urlsafe(64))"
 ```
 
-Copy the generated value into `SECRET_KEY` in `.env`, then initialize and run:
+Put the generated value in `SECRET_KEY` inside `.env`, then initialize and run
+the application:
 
 ```bash
 DJANGO_SETTINGS_MODULE=config.devsettings python manage.py migrate
 DJANGO_SETTINGS_MODULE=config.devsettings python manage.py runserver
 ```
 
-Open `http://127.0.0.1:8000/`. Development email is printed to the terminal.
-Before an internet-facing deployment, replace every example value, configure a
-production database and authenticated SMTP delivery, set canonical hosts and
-origins, provide legally required operator details, run `collectstatic`, and
-keep live-order capability disabled until you have reviewed and tested it.
+Open `http://127.0.0.1:8000/`. Development email is written to the terminal.
 
-## Checks
+## Configuration
+
+The checked-in defaults use the generic name `open trading system` and example
+contact details. Set these values for your own deployment:
+
+- `SITE_NAME`
+- `SITE_TITLE`
+- `SITE_DESCRIPTION`
+- `SITE_URL`
+- `SITE_OWNER_NAME`
+- `SITE_OWNER_ADDRESS`
+- `CONTACT_EMAIL`
+
+Before exposing the application to the internet, also configure allowed hosts,
+trusted origins, a production database, authenticated SMTP delivery, static
+files, and any legally required operator information. Keep live-order support
+disabled until the complete integration has been tested safely.
+
+## Public-source boundary
+
+The export is default-deny: only reviewed files in the private export manifest
+can enter this repository. Public-specific adapters replace production modules
+where necessary. Every public revision is checked for excluded directories,
+private identity outside this README, credentials, formatting errors, test
+failures, dependency vulnerabilities, and CodeQL findings.
+
+Run the local checks with:
 
 ```bash
 python -m black --check .
