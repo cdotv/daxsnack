@@ -9,6 +9,8 @@ from decouple import config as _dc
 
 from core.capital_auth import get_token_headers_with_retry_for_base
 
+TERMINAL_CONFIRM_FAILURE_STATUSES = frozenset({"REJECTED", "FAILED", "ERROR"})
+
 
 def _json_or_empty(resp: requests.Response) -> Dict[str, Any]:
     try:
@@ -114,7 +116,11 @@ def resolve_confirm(
                 st = (cj.get("dealStatus") or cj.get("status") or "").strip().upper()
                 if st:
                     out["confirm_status"] = st
-                if did or st in {"REJECTED", "FAILED", "ERROR"}:
+                for key in ("reason", "rejectReason", "errorCode", "errorMessage"):
+                    value = ad0.get(key) or cj.get(key)
+                    if value is not None and key not in out:
+                        out[key] = value
+                if did or st in TERMINAL_CONFIRM_FAILURE_STATUSES:
                     break
             time.sleep(0.25 * attempt)
         except Exception:
@@ -249,6 +255,19 @@ def submit_open_order(
     if "size" not in ack and isinstance(order, dict) and order.get("size") is not None:
         ack["size"] = order.get("size")
     ack = resolve_confirm(api_base, hdrs, ack, debug=debug)
+    confirm_status = str((ack or {}).get("confirm_status") or "").strip().upper()
+    if confirm_status in TERMINAL_CONFIRM_FAILURE_STATUSES:
+        reason = ""
+        for key in ("reason", "rejectReason", "errorCode", "errorMessage"):
+            value = (ack or {}).get(key)
+            if value is not None and str(value).strip():
+                reason = str(value).strip()
+                break
+        error = f"open_confirm_{confirm_status.lower()}"
+        if reason:
+            error = f"{error}: {reason}"
+        return False, ack, error, hdrs
+
     deal_id = ack.get("dealId") if isinstance(ack, dict) else None
     if not (isinstance(deal_id, str) and deal_id):
         recovered_deal_id = resolve_open_deal_id_from_positions(
