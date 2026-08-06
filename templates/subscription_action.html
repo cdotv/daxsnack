@@ -6,15 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex,nofollow,noarchive" />
     <title>{{ title }} | {{ site_profile.name }}</title>
-    <link rel="icon" href="{% static 'images/favicon.ico' %}" sizes="any" />
+    <link rel="icon" href="{% static 'images/favicon_redesign_v3.ico' %}" sizes="any" />
+    <link rel="icon" href="{% static 'images/favicon_redesign_v3_32.png' %}" type="image/png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="{% static 'images/apple-touch-icon_redesign_v3.png' %}" sizes="180x180" />
     <script src="{% static 'js/theme_bootstrap.js' %}"></script>
     <link rel="stylesheet" href="{% static 'css/style.min.css' %}" />
   </head>
   <body class="subscription-action-page">
     <main class="subscription-action-main">
       <a class="subscription-action-brand" href="/" aria-label="{{ site_profile.name }}">
-        <img src="{% static 'images/logo_start_512.webp' %}" alt="{{ site_profile.name }}" />
-        <span>{{ site_profile.name }}</span>
+        <img src="{% static 'images/logo_badge_v6_512.webp' %}" alt="" />
+        <span class="subscription-action-wordmark" aria-hidden="true"><span class="subscription-wordmark-dax">dax</span><span>snack</span></span>
       </a>
       <section class="subscription-action-panel" aria-labelledby="subscription-action-title">
         <h1 id="subscription-action-title">{{ title }}</h1>

@@ -79,6 +79,8 @@
             label_of: 'of',
             intro_down_label: 'scroll down ↓',
             theme_toggle_label: 'toggle color theme',
+            theme_to_light: 'switch to light theme',
+            theme_to_dark: 'switch to dark theme',
             lang_toggle_label: 'switch language',
             nav_next: 'next',
             nav_previous: 'previous',
@@ -185,7 +187,7 @@
             label_pnl: 'profit',
             label_entry: 'entry',
             label_stop: 'stop',
-            label_initial_stop: 'initial&nbsp;stop',
+            label_initial_stop: 'initial\u00a0stop',
             label_trailing_stop: 'trailing&nbsp;stop',
             label_size: 'size',
             label_risk: 'risk',
@@ -220,22 +222,24 @@
             setup_of_the_day: 'heutiges setup',
             nav_setup: 'setup',
             nav_how: 'so funktioniert es',
-            running_setups: 'offene trades',
-            closed_trades: 'geschlossene trades',
+            running_setups: 'offene positionen',
+            closed_trades: 'geschlossene positionen',
             running_closed: 'geschlossen',
             running_update_stop: 'Stopp anpassen',
-            running_update_stop_tip: 'neuer Trailing‑Stopp vorgeschlagen',
-            running_open_tip: 'Trade ist aktuell offen',
-            running_exit_today_tip: 'Ausstiegskriterien heute erfüllt',
+            running_update_stop_tip: 'neuer trailing‑stop vorgeschlagen',
+            running_open_tip: 'position ist aktuell offen',
+            running_exit_today_tip: 'ausstiegskriterien auf dem heutigen handelstag erfüllt',
             pill_new: 'neu',
             gslo_badge: 'GSLO',
-            gslo_tip: 'Garantierter Stopp: Der Broker garantiert Ihren Stoppreis auch bei Kurslücken.',
-            capital_insufficient: 'nicht genug kapital, um das heutige setup auszuführen',
+            gslo_tip: 'garantierter stop‑loss: der broker schließt die position auch bei kurslücken zum festgelegten kurs.',
+            capital_insufficient: 'nicht genügend kapital, um das heutige setup umzusetzen',
             label_reserved: 'reserviert',
             label_needed: 'benötigt',
             label_of: 'von',
             intro_down_label: 'scrolle nach unten ↓',
             theme_toggle_label: 'farbmodus wechseln',
+            theme_to_light: 'zum hellen farbmodus wechseln',
+            theme_to_dark: 'zum dunklen farbmodus wechseln',
             lang_toggle_label: 'sprache wechseln',
             nav_next: 'weiter',
             nav_previous: 'zurück',
@@ -248,104 +252,104 @@
             imp_sent: 'Nachricht gesendet. Danke!',
             imp_error: 'Senden fehlgeschlagen.',
             imp_network: 'Netzwerkfehler.',
-            imp_err_name: 'Bitte Namen angeben.',
-            imp_err_email: 'Ungültige E‑Mail-Adresse.',
-            imp_err_message: 'Bitte eine Nachricht eingeben.',
+            imp_err_name: 'Bitte gib deinen Namen ein.',
+            imp_err_email: 'Bitte gib eine gültige E‑Mail-Adresse ein.',
+            imp_err_message: 'Bitte gib eine Nachricht ein.',
 
             // Disclaimer
             disclaimer_label: 'risikohinweis:',
             disclaimer_summary: 'trading birgt risiken. du kannst einen teil oder das gesamte eingesetzte kapital verlieren. historische ergebnisse, backtests und simulationen erlauben keine verlässliche aussage über die zukünftige wertentwicklung.',
-            disclaimer_details: ' für die richtigkeit und vollständigkeit von daten, berechnungen und modellresultaten wird keine garantie übernommen. sämtliche inhalte geben ausschließlich die persönlichen ansichten des autors wieder, dienen nur didaktischen und informativen zwecken und stellen weder finanzberatung noch anlageberatung noch eine aufforderung zum kauf oder verkauf von finanzinstrumenten dar. für verluste oder schäden, die aus der nutzung dieser website oder aus dem handeln auf basis ihrer inhalte entstehen, wird keine haftung übernommen.',
+            disclaimer_details: ' für die richtigkeit und vollständigkeit von daten, berechnungen und modellergebnissen wird keine garantie übernommen. sämtliche inhalte geben ausschließlich die persönlichen ansichten des autors wieder, dienen nur bildungs- und informationszwecken und stellen weder finanzberatung noch anlageberatung noch eine aufforderung zum kauf oder verkauf von finanzinstrumenten dar. für verluste oder schäden, die aus der nutzung dieser website oder aus dem handeln auf grundlage ihrer inhalte entstehen, wird keine haftung übernommen.',
             disclaimer_close: 'schließen',
             disclaimer_more: 'mehr',
             disclaimer_less: 'weniger',
             about_1: systemName + ' nutzt das marktuniversum und die strategien des betreibers.',
             about_1_html: '<strong>' + escapeHtml(systemName) + '</strong> nutzt das marktuniversum und die strategien des betreibers.',
             about_2: 'der betreiber muss jede angebundene strategie unabhängig validieren.',
-            about_3: 'das tagesergebnis ist ein setup mit einstieg und stopp oder kein setup.',
+            about_3: 'das tagesergebnis ist ein setup mit einstieg und stop‑loss oder kein setup.',
             how_title: 'dein universum. deine strategie. dein setup.',
-            how_1: 'scannen. tägliche kurse werden aktualisiert und jede aktive strategie wird ausgeführt.',
+            how_1: 'scannen. tägliche kurse werden aktualisiert und alle aktiven strategien berechnet.',
             how_2: 'prüfen. binde nur unabhängig validierte strategien an.',
-            how_3: 'auswählen. portfolio- und kontogrenzen bestimmen das setup des tages.',
+            how_3: 'auswählen. portfolio‑ und kontolimits bestimmen, welches setup für den tag veröffentlicht wird.',
             stat_instruments: 'konfigurierte instrumente',
             stat_strategies: 'eigene strategien',
-            stat_daily: 'kandidaten-kombinationen',
-            label_close: 'schluss',
+            stat_daily: 'kandidatenkombinationen',
+            label_close: 'schlusskurs',
             no_setup_found: 'heute kein setup',
             intro_right_title: 'hier starten',
             how_li1_html: '<a href="#" id="start-guide-link" class="start-guide-link">anleitung lesen</a>',
             how_li2: 'erhalte das tägliche setup kostenlos per e-mail.',
             how_li3: 'heutiges setup ansehen ↓',
             start_guide_title: 'setup umsetzen',
-            basics_title: 'setup lesen',
-            basics_1: 'die richtung zeigt long oder short.',
-            basics_2: 'der einstieg ist der triggerkurs. der stopp ist der kurs, der das setup ungültig macht.',
-            basics_3: 'volumen und anschlussbewegung unterstützen das trade-management nach dem einstieg.',
+            basics_title: 'setup verstehen',
+            basics_1: 'die handelsrichtung ist long oder short.',
+            basics_2: 'der einstiegskurs löst die order aus. der stop‑loss markiert den kurs, an dem das setup ungültig wird.',
+            basics_3: 'volumen und kursfortsetzung unterstützen das positionsmanagement nach dem einstieg.',
             risk_title: 'risikogrenzen',
-            risk_1: 'definiere ein angemessenes anfangsrisiko für dein system.',
+            risk_1: 'definiere ein angemessenes anfängliches risiko für dein system.',
             risk_2: 'definiere, wie viele positionen gleichzeitig offen sein dürfen.',
-            risk_3: 'definiere vor der ausführung eine portfolio-obergrenze.',
-            benchmark_title: 'performancevergleich',
-            benchmark_since: 'performance seit konfiguriertem start',
+            risk_3: 'definiere vor der ausführung eine obergrenze für das portfolioengagement.',
+            benchmark_title: 'benchmarkvergleich',
+            benchmark_since: 'wertentwicklung seit dem konfigurierten start',
             activity_title: 'aktivität',
             activity_setup_published: 'setup veröffentlicht',
             activity_no_setup: 'kein setup veröffentlicht',
-            activity_trade_opened: 'trade eröffnet',
-            activity_trade_closed: 'trade geschlossen',
-            activity_override_applied: 'strategie-update aktiviert',
-            activity_override_disabled: 'strategie-update deaktiviert',
+            activity_trade_opened: 'position eröffnet',
+            activity_trade_closed: 'position geschlossen',
+            activity_override_applied: 'strategieanpassung angewendet',
+            activity_override_disabled: 'strategieanpassung deaktiviert',
             activity_universe_updated: 'marktuniversum aktualisiert',
             activity_git_commit: 'letzter git-commit',
-            activity_enabled_epics: 'epics aktiviert',
+            activity_enabled_epics: 'EPICs aktiv',
             activity_outcome_stopped: 'ausgestoppt',
-            activity_outcome_win: 'gewinner',
-            activity_outcome_loss: 'verlierer',
+            activity_outcome_win: 'gewinn',
+            activity_outcome_loss: 'verlust',
             activity_outcome_closed: 'geschlossen',
-            metrics_heading: 'strategie-kennzahlen',
+            metrics_heading: 'strategiekennzahlen',
             metrics_overall: systemName,
-            metrics_weight: 'Gewicht',
-            metrics_sharpe_ratio: 'Sharpe-Ratio',
-            metrics_volatility: 'Volatilität',
-            metrics_win_rate: 'Trefferquote',
-            metrics_side_mix: 'Richtung',
-            metrics_best: 'Best',
-            metrics_worst: 'Schlechtest',
-            metrics_avg_win: 'Ø Gewinn',
-            metrics_avg_loss: 'Ø Verlust',
+            metrics_weight: 'anteil',
+            metrics_sharpe_ratio: 'sharpe-ratio',
+            metrics_volatility: 'volatilität',
+            metrics_win_rate: 'trefferquote',
+            metrics_side_mix: 'long-/short-anteil',
+            metrics_best: 'bester trade',
+            metrics_worst: 'schlechtester trade',
+            metrics_avg_win: 'Ø gewinntrade',
+            metrics_avg_loss: 'Ø verlusttrade',
 
             // Start Guide
-            start_psych_1: 'prüfe richtung, einstieg und stopp, bevor du die order platzierst.',
+            start_psych_1: 'prüfe handelsrichtung, einstiegskurs und stop‑loss, bevor du die order platzierst.',
             start_psych_2: 'prüfe den veröffentlichten markt und nutze deine konfigurierten risikogrenzen.',
-            start_psych_3: 'folge den stopp- und ausstiegshinweisen beim offenen trade.',
+            start_psych_3: 'folge den stop‑loss- und ausstiegshinweisen für die offene position.',
             // Konto einrichten
-            account_title: 'ausführung',
-            account_1: 'verbinde den markt- und ausführungsanbieter deiner wahl.',
-            account_3: 'teste die vollständige integration zuerst ohne produktivaufträge.',
+            account_title: 'orderausführung',
+            account_1: 'verbinde den markt‑ und orderausführungsanbieter deiner wahl.',
+            account_3: 'teste die vollständige integration zuerst in einer nichtproduktiven umgebung.',
             // Kontozeile
-            acc_label: 'Kto.-St.',
-            acc_since: 'performance seit konfiguriertem start',
-            acc_est_ann: 'gesch. Rendite pro Jahr',
+            acc_label: 'kontostand',
+            acc_since: 'wertentwicklung seit dem konfigurierten start',
+            acc_est_ann: 'geschätzte jahresrendite',
             last_check: 'aktualisiert',
             setup_found: 'setup bereit',
             sub_placeholder: 'subscriber@example.com',
             sub_btn: 'setup erhalten',
-            email_label: 'E‑Mail Adresse',
-            sub_ok: 'Prüfe deinen Posteingang und bestätige deine E-Mail-Adresse.',
-            sub_err_email: 'Bitte gültige E‑Mail-Adresse.',
-            sub_error: 'Abonnement fehlgeschlagen.',
+            email_label: 'E‑Mail-Adresse',
+            sub_ok: 'Prüfe deinen Posteingang und bestätige deine E‑Mail-Adresse.',
+            sub_err_email: 'Bitte gib eine gültige E‑Mail-Adresse ein.',
+            sub_error: 'Anmeldung fehlgeschlagen.',
             running_open: 'offen',
-            running_exit_today: 'Ausstieg heute',
-            running_exit_next: 'Ausstieg am nächsten Handelstag',
-            running_exit_next_tip: 'Ausstiegskriterien erfüllt; Ausstieg am nächsten Handelstag (Wochenende)',
-            running_exit_prefix: 'Ausstieg',
-            running_main_chart_tip: 'dieses Instrument im oberen Chart anzeigen',
+            running_exit_today: 'ausstieg heute',
+            running_exit_next: 'ausstieg am nächsten handelstag',
+            running_exit_next_tip: 'ausstiegskriterien erfüllt; position am nächsten handelstag schließen (wochenende)',
+            running_exit_prefix: 'ausstieg',
+            running_main_chart_tip: 'dieses instrument im oberen chart anzeigen',
             running_stopped: 'ausgestoppt',
             running_stopped_tip: 'stopp wurde ausgelöst',
-            label_pnl: 'Profit',
+            label_pnl: 'profit',
             label_entry: 'einstieg',
             label_stop: 'stopp',
-            label_initial_stop: 'Initial&nbsp;Stopp',
-            label_trailing_stop: 'Trailing&nbsp;Stopp',
+            label_initial_stop: 'anfänglicher\u00a0stopp',
+            label_trailing_stop: 'trailing‑stop',
             label_size: 'größe',
             label_risk: 'risiko',
             basics_lbl_open: 'Eröffnung', basics_lbl_high: 'Hoch', basics_lbl_low: 'Tief', basics_lbl_close: 'Schluss',
@@ -354,19 +358,19 @@
             faq_q_price_action: 'wie wird ein setup ausgewählt?',
             faq_a_price_action_html: `
               <p>
-                diese öffentliche anwendung zeigt die ausgabe deines konfigurierten providers. strategie, validierung und portfolioregeln bleiben deine verantwortung.
+                diese öffentliche anwendung zeigt die ausgabe deines konfigurierten datenanbieters. strategiedesign, validierung und portfolioregeln bleiben deine verantwortung.
               </p>
             `,
             faq_q_second_entry: 'warum gibt es heute kein setup?',
             faq_a_second_entry_html: `
               <p>
-                dein provider kann keinen kandidaten liefern. dann lautet das tagesergebnis „heute kein setup“.
+                dein datenanbieter kann keinen kandidaten liefern. dann lautet das tagesergebnis „heute kein setup“.
               </p>
             `,
-            faq_q_acceptance: 'wie werden strategien geprüft?',
+            faq_q_acceptance: 'wie werden strategien validiert?',
             faq_a_acceptance_html: `
               <p>
-                das öffentliche repository enthält weder strategie noch validierungsregeln. entwickle und prüfe deine eigenen vor der anbindung.
+                das öffentliche repository enthält weder strategien noch validierungsregeln. entwickle und validiere deine eigenen strategien vor der anbindung.
               </p>
             `,
             faq_q_execution: 'was führe ich selbst aus?',
@@ -405,11 +409,7 @@
           try { const ct = document.getElementById('closed-title'); if (ct && t.closed_trades) ct.textContent = t.closed_trades; } catch (_) {}
           try { const down = document.getElementById('intro-down'); if (down && t.intro_down_label) { down.setAttribute('aria-label', t.intro_down_label); down.setAttribute('title', t.intro_down_label); } } catch (_) {}
           try {
-            const tt = document.getElementById('theme-toggle');
-            if (tt && t.theme_toggle_label) {
-              tt.setAttribute('aria-label', t.theme_toggle_label);
-              tt.setAttribute('title', t.theme_toggle_label);
-            }
+            setToggleIcon(resolveTheme());
           } catch (_) {}
           set('impressum-link', t.imp_link);
           set('licenses-link', t.lic_link);
@@ -784,8 +784,12 @@
           const btn = document.getElementById('theme-toggle');
           if (!btn) return;
           btn.innerHTML = BULB_SVG;
-          btn.setAttribute('aria-label', theme === 'dark' ? 'switch to light theme' : 'switch to dark theme');
-          btn.setAttribute('title', theme === 'dark' ? 'switch to light theme' : 'switch to dark theme');
+          const dict = (i18n && i18n[currentLang]) || i18n.en;
+          const label = theme === 'dark'
+            ? (dict.theme_to_light || 'switch to light theme')
+            : (dict.theme_to_dark || 'switch to dark theme');
+          btn.setAttribute('aria-label', label);
+          btn.setAttribute('title', label);
         }
 
         function flushTVReadyQueue() {
@@ -1438,10 +1442,13 @@
             de: {
               'silver': 'silber',
               'germany (dax)': 'deutschland (dax)',
-              'switzerland (smi)': 'Schweiz (SMI)',
-              'australia (asx 200)': 'Australien (ASX 200)',
-              'brazil (msci brazil)': 'Brazilien (MSCI Brazil)',
+              'uk (ftse 100)': 'uk (ftse 100)',
+              'switzerland (smi)': 'schweiz (smi)',
+              'australia (asx 200)': 'australien (asx 200)',
+              'brazil (msci brazil)': 'brasilien (msci brazil)',
               'europe (stoxx&nbsp;50)': 'europa (stoxx&nbsp;50)',
+              'japan (nikkei&nbsp;225)': 'japan (nikkei&nbsp;225)',
+              'china (a50)': 'china (a50)',
               'world (msci&nbsp;acwi)': 'welt (msci&nbsp;acwi)',
             },
           };
@@ -2895,7 +2902,7 @@
               if (hasTrailing && !trailingMatchesInitial && trailingStopNum !== null) {
                 const trailingLabel = (t.label_trailing_stop || 'trailing&nbsp;stop');
                 trailMeta = ' • ' + trailingLabel + ':&nbsp;' + formatPx(trailingStopNum);
-                stopLabel = (t.label_initial_stop || 'initial&nbsp;stop');
+                stopLabel = (t.label_initial_stop || 'initial\u00a0stop');
                 // When trailing is active, show the true initial stop if available
                 try {
                   if (initialStopNum !== null) {

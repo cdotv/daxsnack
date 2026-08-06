@@ -227,13 +227,23 @@ def subscribe(request):
         return _ratelimited_response()
     data = _parse_json_body(request)
     email = str(data.get("email") or "").strip().lower()
+    language = "de" if str(data.get("lang") or "").lower() == "de" else "en"
     if str(data.get("homepage") or "").strip():
         return JsonResponse({"ok": True})
     try:
         validate_email(email)
     except ValidationError:
         return JsonResponse(
-            {"ok": False, "errors": {"email": "Enter a valid email address."}},
+            {
+                "ok": False,
+                "errors": {
+                    "email": (
+                        "Bitte gib eine gültige E-Mail-Adresse ein."
+                        if language == "de"
+                        else "Please enter a valid email address."
+                    )
+                },
+            },
             status=400,
         )
 
@@ -246,23 +256,39 @@ def subscribe(request):
         confirmed_at=None,
         confirm_token_hash="",
         unsubscribe_token_hash="",
-        language="de" if str(data.get("lang") or "").lower() == "de" else "en",
+        language=language,
     )
     confirm_link = build_confirmation_link(subscription, settings.SITE_URL)
     safe_link = escape(confirm_link, quote=True)
     try:
-        message = build_multipart_message(
-            subject=f"Confirm your {get_site_profile()['name']} subscription",
-            text=(
+        if language == "de":
+            subject = f"{get_site_profile()['name']}-Abonnement bestätigen"
+            text = (
+                "Bitte bestätige deine E-Mail-Adresse, um Setup-Benachrichtigungen zu erhalten.\n\n"
+                f"Abonnement bestätigen: {confirm_link}\n\n"
+                "Falls du diese E-Mail nicht angefordert hast, kannst du sie ignorieren."
+            )
+            html = (
+                "<p>Bitte bestätige deine E-Mail-Adresse, um Setup-Benachrichtigungen zu erhalten.</p>"
+                f'<p><a href="{safe_link}">Abonnement bestätigen</a></p>'
+                "<p>Falls du diese E-Mail nicht angefordert hast, kannst du sie ignorieren.</p>"
+            )
+        else:
+            subject = f"Confirm your {get_site_profile()['name']} subscription"
+            text = (
                 "Confirm your email to receive setup notifications.\n\n"
                 f"Confirm: {confirm_link}\n\n"
                 "If you did not request this, ignore this email."
-            ),
-            html=(
+            )
+            html = (
                 "<p>Confirm your email to receive setup notifications.</p>"
                 f'<p><a href="{safe_link}">Confirm subscription</a></p>'
                 "<p>If you did not request this, ignore this email.</p>"
-            ),
+            )
+        message = build_multipart_message(
+            subject=subject,
+            text=text,
+            html=html,
             to=email,
         )
         message.send(fail_silently=False)
@@ -289,19 +315,19 @@ _SUBSCRIPTION_ACTION_COPY = {
         "unsubscribed_message": "you will no longer receive emails.",
     },
     "de": {
-        "home": "zurueck zum offenen handelssystem",
-        "invalid_title": "ungueltiger link",
-        "invalid_message": "dieser link ist ungueltig oder abgelaufen.",
-        "confirm_title": "abonnement bestaetigen",
-        "confirm_message": "bestaetige den erhalt von setup-benachrichtigungen.",
-        "confirm_button": "abonnement bestaetigen",
-        "confirmed_title": "abonnement bestaetigt",
-        "confirmed_message": "du erhaeltst kuenftige setup-benachrichtigungen.",
+        "home": "zurück zum offenen handelssystem",
+        "invalid_title": "ungültiger link",
+        "invalid_message": "dieser link ist ungültig oder abgelaufen.",
+        "confirm_title": "abonnement bestätigen",
+        "confirm_message": "bestätige den erhalt von setup-benachrichtigungen.",
+        "confirm_button": "abonnement bestätigen",
+        "confirmed_title": "abonnement bestätigt",
+        "confirmed_message": "du erhältst künftig setup-benachrichtigungen.",
         "unsubscribe_title": "abmelden",
-        "unsubscribe_message": "bestaetige, dass du keine e-mails mehr erhalten moechtest.",
+        "unsubscribe_message": "bestätige, dass du keine e-mails mehr erhalten möchtest.",
         "unsubscribe_button": "abmelden",
         "unsubscribed_title": "abgemeldet",
-        "unsubscribed_message": "du erhaeltst keine e-mails mehr.",
+        "unsubscribed_message": "du erhältst keine e-mails mehr.",
     },
 }
 
