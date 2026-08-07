@@ -228,7 +228,7 @@
             running_update_stop: 'Stopp anpassen',
             running_update_stop_tip: 'neuer trailing‑stop vorgeschlagen',
             running_open_tip: 'position ist aktuell offen',
-            running_exit_today_tip: 'ausstiegskriterien auf dem heutigen handelstag erfüllt',
+            running_exit_today_tip: 'ausstiegskriterien am heutigen handelstag erfüllt',
             pill_new: 'neu',
             gslo_badge: 'GSLO',
             gslo_tip: 'garantierter stop‑loss: der broker schließt die position auch bei kurslücken zum festgelegten kurs.',
@@ -4066,6 +4066,8 @@
             var linkEl = tgt.closest('#start-guide-link');
             if (linkEl) {
               e.preventDefault();
+              var introDown = document.getElementById('intro-down');
+              if (introDown) introDown.hidden = true;
               stepper.setAttribute('data-guide-open', 'true');
               showStep(2);
               try {

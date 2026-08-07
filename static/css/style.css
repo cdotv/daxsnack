@@ -1027,9 +1027,7 @@ h1, h2 {
   width: var(--start-lockup-size);
   height: var(--start-lockup-size);
   margin: 0 auto clamp(1.75rem, 3.5vw, 2.5rem);
-  opacity: 0;
-  transition: opacity 220ms ease;
-  will-change: opacity;
+  opacity: 1;
 }
 
 @media (min-width: 769px) and (min-height: 720px) {
@@ -1044,10 +1042,6 @@ h1, h2 {
   .intro-brand {
     margin-bottom: 4rem;
   }
-}
-
-.intro-brand.is-ready {
-  opacity: 1;
 }
 
 .start-wordmark {
@@ -1115,17 +1109,7 @@ h1, h2 {
   backface-visibility: hidden;
   filter: none;
   image-rendering: pixelated;
-  opacity: 0;
-  transform: translateX(-6px) scale(0.96) translateZ(0);
-  transition:
-    opacity 260ms ease,
-    transform 520ms cubic-bezier(0.2, 0.86, 0.18, 1);
-  will-change: opacity, transform;
-}
-
-.intro-brand.is-ready .start-logo {
   opacity: 1;
-  transform: translateX(0) scale(1) translateZ(0);
 }
 
 .start-wordmark-ring {
@@ -1155,11 +1139,6 @@ h1, h2 {
 /* Respect user motion preferences */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .intro-brand,
-  .start-wordmark,
-  .start-logo {
-    transition: none;
-  }
   .intro-brand.is-revealed .start-wordmark-letter {
     transition: none;
     opacity: 1;
