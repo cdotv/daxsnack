@@ -1,4 +1,5 @@
 import os
+import re
 import unittest
 from pathlib import Path
 from types import SimpleNamespace
@@ -124,8 +125,9 @@ class PublicApplicationTests(SimpleTestCase):
         paths = [path.relative_to(ROOT).as_posix().lower() for path in ROOT.rglob("*")]
         self.assertFalse(any("backtest" in path for path in paths))
 
-    def test_source_identity_is_limited_to_readme(self):
+    def test_source_identity_is_limited_to_attribution_files(self):
         forbidden = ("dax" + "snack", "christopher" + " vogt")
+        attribution_files = {ROOT / "NOTICE", ROOT / "README.md"}
         for path in ROOT.rglob("*"):
             if not path.is_file() or ".git" in path.parts:
                 continue
@@ -135,7 +137,7 @@ class PublicApplicationTests(SimpleTestCase):
                 continue
             for value in forbidden:
                 with self.subTest(path=path, value=value):
-                    if path == ROOT / "README.md":
+                    if path in attribution_files:
                         self.assertIn(value, text)
                     else:
                         self.assertNotIn(value, text)
@@ -152,6 +154,42 @@ class PublicApplicationTests(SimpleTestCase):
         self.assertNotIn("'pie' + Math.random()", frontend)
         self.assertNotIn("document.cookie.match('(^|;)\\s*' + name", frontend)
         self.assertIn("document.cookie.split(';')", frontend)
+
+    def test_all_local_static_references_resolve_to_exported_files(self):
+        references = set()
+        template_references = set()
+        for template in (ROOT / "templates").glob("*.html"):
+            template_references.update(
+                re.findall(
+                    r"{%\s*static\s+['\"]([^'\"]+)['\"]\s*%}",
+                    template.read_text(encoding="utf-8"),
+                )
+            )
+        references.update(template_references)
+        for stylesheet in (ROOT / "static" / "css").glob("*.css"):
+            references.update(
+                re.findall(
+                    r"url\(\s*['\"]?/static/([^'\")]+)",
+                    stylesheet.read_text(encoding="utf-8"),
+                )
+            )
+        for script in (ROOT / "static" / "js").glob("*.js"):
+            references.update(
+                re.findall(
+                    r"['\"]/static/([^'\"]+)['\"]",
+                    script.read_text(encoding="utf-8"),
+                )
+            )
+
+        optional_generated = {"js/app_main.min.js"}
+        self.assertTrue(optional_generated.isdisjoint(template_references))
+        missing = sorted(
+            reference
+            for reference in references
+            if reference not in optional_generated
+            if not (ROOT / "static" / reference).is_file()
+        )
+        self.assertEqual(missing, [])
 
 
 if __name__ == "__main__":

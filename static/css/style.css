@@ -1615,6 +1615,7 @@ h1, h2 {
   cursor: pointer;
   z-index: 6000;
 }
+.intro-down[hidden] { display: none !important; }
 .intro-down:hover { filter: brightness(0.98); }
 .intro-down:active { transform: translateX(-50%) translateY(1px); }
 

@@ -15,7 +15,7 @@ It is not a ready-made trading strategy.
 - Django configuration, URLs, models, and migrations
 - the browser interface and static assets
 - email subscriptions and contact handling
-- generic market-data, broker, and position-management components
+- generic market-data, broker, websocket-stream, and position-management components
 - a strict provider interface for supplying dashboard data
 - tests and production-oriented security defaults
 
@@ -115,7 +115,7 @@ disabled until the complete integration has been tested safely.
 The export is default-deny: only reviewed files in the private export manifest
 can enter this repository. Public-specific adapters replace production modules
 where necessary. Every public revision is checked for excluded directories,
-private identity outside this README, credentials, formatting errors, test
+private identity outside this README and `NOTICE`, credentials, formatting errors, test
 failures, dependency vulnerabilities, and CodeQL findings.
 
 Run the local checks with:

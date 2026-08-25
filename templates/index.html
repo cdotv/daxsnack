@@ -7,15 +7,19 @@
     <title>{{ site_profile.title }}</title>
     <meta name="description" content="{{ site_profile.description }}" />
     <meta name="author" content="{{ site_profile.owner.name }}" />
+    <link rel="canonical" href="{{ site_profile.url }}/" />
     <meta name="contact-ts" content="{{ contact_ts }}" />
     <meta name="contact-sig" content="{{ contact_sig }}" />
     <meta name="subscribe-ts" content="{{ subscribe_ts }}" />
     <meta name="subscribe-sig" content="{{ subscribe_sig }}" />
     <meta name="ver" content="{% if version_display %}{{ version_display }}{% endif %}" />
-    <link rel="icon" href="{% static 'images/favicon.ico' %}" sizes="any" />
-    <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon" />
+    <link rel="icon" href="{% static 'images/favicon_redesign_v3.ico' %}" sizes="any" />
+    <link rel="icon" href="{% static 'images/favicon_redesign_v3_32.png' %}" type="image/png" sizes="32x32" />
+    <link rel="shortcut icon" href="{% static 'images/favicon_redesign_v3.ico' %}" type="image/x-icon" />
+    <link rel="apple-touch-icon" href="{% static 'images/apple-touch-icon_redesign_v3.png' %}" sizes="180x180" />
     <script src="{% static 'js/theme_bootstrap.js' %}"></script>
-    <link rel="preload" as="image" href="{% static 'images/logo_start_512.webp' %}" type="image/webp" />
+    <link rel="preload" as="image" href="{% static 'images/logo_badge_v6_512.webp' %}" type="image/webp" />
+    <link rel="preload" as="font" href="{% static 'fonts/HubotSans/HubotSans-Light.woff2' %}" type="font/woff2" crossorigin />
     <link rel="preload" as="font" href="{% static 'fonts/IBMPlexMono/IBMPlexMono-SemiBold.woff2' %}" type="font/woff2" crossorigin />
     <link rel="stylesheet" href="{% static 'css/style.css' %}" />
   </head>
@@ -24,48 +28,8 @@
       <div class="bg-grid"></div>
       <div class="bg-candles"></div>
     </div>
-    <!-- Start page overlay: visible logo flies into the nav -->
-    <div class="start-overlay is-active" aria-hidden="true">
-      <div class="start-logo-wrap">
-        <div class="start-logo-flight">
-          <picture>
-            <source srcset="{% static 'images/logo_start_512.webp' %}" type="image/webp" />
-            <img class="start-logo start-logo-gold" src="{% static 'images/logo_start_512.png' %}" alt="{{ site_profile.name }}" loading="eager" width="512" height="512" decoding="sync" />
-          </picture>
-        </div>
-      </div>
-    </div>
-    <!-- Hidden SVG filter: selectively desaturate only luminance extremes; midtones stay colored -->
-    <svg width="0" height="0" style="position:absolute; width:0; height:0; overflow:hidden; pointer-events:none;" aria-hidden="true">
-      <defs>
-        <filter id="bwSelective" color-interpolation-filters="sRGB">
-          <!-- Grayscale version of the source -->
-          <feColorMatrix in="SourceGraphic" type="saturate" values="0" result="gray" />
-          <!-- Luminance (in alpha channel) -->
-          <feColorMatrix in="SourceGraphic" type="luminanceToAlpha" result="lum" />
-          <!-- Build a mask that is 1 at very dark/light, 0 near midtones (smooth-ish via table steps) -->
-          <feComponentTransfer in="lum" result="mask">
-            <feFuncA type="table" tableValues="1 0.9 0.7 0.4 0.2 0 0.2 0.4 0.7 0.9 1" />
-          </feComponentTransfer>
-          <!-- Apply mask: grayscale where mask=1 -->
-          <feComposite in="gray" in2="mask" operator="in" result="grayPart" />
-          <!-- Keep original color where mask=0 -->
-          <feComposite in="SourceGraphic" in2="mask" operator="out" result="colorPart" />
-          <!-- Combine colored midtones with grayscale extremes -->
-          <feComposite in="grayPart" in2="colorPart" operator="over" />
-        </filter>
-      </defs>
-    </svg>
     <header class="header">
       <nav class="top-nav">
-        <a id="nav-home" href="" class="nav-logo-link" aria-label="reload page">
-          <span class="nav-logo-slot" aria-hidden="true">
-          <picture>
-            <source srcset="{% static 'images/logo_start_512.webp' %}" type="image/webp" />
-            <img class="nav-logo" src="{% static 'images/logo_start_512.png' %}" alt="" width="512" height="512" decoding="async" />
-          </picture>
-          </span>
-        </a>
         <a id="nav-setup" href="#setup" class="nav-link">setup</a>
         <span class="nav-sep" aria-hidden="true">|</span>
         <a id="nav-how" href="#how-it-works" class="nav-link">how it works</a>
@@ -79,6 +43,25 @@
       <!-- Intro section: golden-ratio grid with left slides and right quick-start -->
       <section id="intro" class="section section-intro">
         <div class="intro-inner how-inner">
+          <div class="intro-brand">
+            <a id="brand-home" href="{{ site_profile.url }}/" class="start-logo-link" aria-label="{{ site_profile.name }} home">
+              <picture class="start-logo-picture">
+                <source srcset="{% static 'images/logo_badge_v6_512.webp' %}" type="image/webp" />
+                <img class="start-logo" src="{% static 'images/logo_badge_v6_512.png' %}" alt="" loading="eager" width="512" height="512" decoding="sync" />
+              </picture>
+              <h1 id="intro-title" class="start-wordmark" aria-label="{{ site_profile.name }}">
+                <svg class="start-wordmark-ring" viewBox="0 0 240 240" role="img" aria-labelledby="intro-wordmark-title" focusable="false">
+                  <title id="intro-wordmark-title">{{ site_profile.name }}</title>
+                  <defs>
+                    <path id="intro-wordmark-arc" d="M 36 78 A 98 98 0 0 1 204 78" />
+                  </defs>
+                  <text>
+                    <textPath href="#intro-wordmark-arc" startOffset="50%" text-anchor="middle"><tspan class="start-wordmark-letter start-wordmark-snack" textLength="168" lengthAdjust="spacingAndGlyphs">{{ site_profile.name }}</tspan></textPath>
+                  </text>
+                </svg>
+              </h1>
+            </a>
+          </div>
           <div class="intro-grid">
           <!-- Left: guided stepper -->
           <div class="intro-left">
@@ -454,8 +437,7 @@
           {% endif %}
         </span>
       </span>
-      <!-- Subtle watermark logo at bottom-right in flow -->
-      <img class="page-watermark" src="{% static 'images/logo_watermark_320.webp' %}" srcset="{% static 'images/logo_watermark_320.webp' %} 320w, {% static 'images/logo_watermark_640.webp' %} 640w" sizes="(max-width: 600px) 38vw, 28vw" width="640" height="640" loading="lazy" decoding="async" alt="" aria-hidden="true" />
+      <img class="page-watermark" src="{% static 'images/toast_watermark_v3_320.webp' %}" srcset="{% static 'images/toast_watermark_v3_320.webp' %} 320w, {% static 'images/toast_watermark_v3_512.webp' %} 512w" sizes="(max-width: 600px) 34vw, 18vw" width="512" height="512" loading="lazy" decoding="async" alt="" aria-hidden="true" />
     </footer>
 
     <!-- Impressum Modal -->

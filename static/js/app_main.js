@@ -345,7 +345,7 @@
             running_main_chart_tip: 'dieses instrument im oberen chart anzeigen',
             running_stopped: 'ausgestoppt',
             running_stopped_tip: 'stopp wurde ausgelöst',
-            label_pnl: 'profit',
+            label_pnl: 'Gewinn',
             label_entry: 'einstieg',
             label_stop: 'stopp',
             label_initial_stop: 'anfänglicher\u00a0stopp',
@@ -629,7 +629,8 @@
           address: String(siteOwner.address || 'Configure SITE_OWNER_ADDRESS'),
           email: String(siteOwner.email || 'contact@example.com')
         };
-        const FONT_LICENSE_URL = '/static/fonts/IBMPlexMono/LICENSE.txt';
+        const IBM_PLEX_LICENSE_URL = '/static/fonts/IBMPlexMono/LICENSE.txt';
+        const HUBOT_SANS_LICENSE_URL = '/static/fonts/HubotSans/OFL.txt';
         const TUX_SOURCE_URL = 'https://isc.tamu.edu/~lewing/linux/';
         const LINUX_MARK_URL = 'https://www.linuxfoundation.org/legal/the-linux-mark';
         const PYTHON_POLICY_URL = 'https://www.python.org/psf/trademarks/';
@@ -738,7 +739,9 @@
             <p><strong>Verwendete Marken und Lizenzhinweise</strong></p>
             <p>Im Footer werden nur offizielle oder original veröffentlichte Software-Logos angezeigt, deren Nutzungs- oder Lizenzbedingungen diese Darstellung zulassen.</p>
             <h4>IBM Plex Mono</h4>
-            <p>Die Website-Schrift wird unter der SIL Open Font License 1.1 verwendet. <a href="${FONT_LICENSE_URL}" target="_blank" rel="noopener">Vollständigen Lizenztext öffnen</a>.</p>
+            <p>Die Website-Schrift wird unter der SIL Open Font License 1.1 verwendet. <a href="${IBM_PLEX_LICENSE_URL}" target="_blank" rel="noopener">Vollständigen Lizenztext öffnen</a>.</p>
+            <h4>Hubot Sans</h4>
+            <p>Die Wortmarke verwendet Hubot Sans Light unter der SIL Open Font License 1.1. <a href="${HUBOT_SANS_LICENSE_URL}" target="_blank" rel="noopener">Vollständigen Lizenztext öffnen</a>.</p>
             <h4>Tux / Linux</h4>
             <p>Das Tux-Bild stammt von Larry Ewing. Die Verwendung und Bearbeitung ist gestattet, sofern Larry Ewing und The GIMP genannt werden.</p>
             <p>Linux® ist die eingetragene Marke von Linus Torvalds in den USA und anderen Ländern.</p>
@@ -760,7 +763,9 @@
             <p><strong>Used marks and license notices</strong></p>
             <p>The footer displays only official or originally published software logos whose usage or license terms allow this presentation.</p>
             <h4>IBM Plex Mono</h4>
-            <p>The website font is used under the SIL Open Font License 1.1. <a href="${FONT_LICENSE_URL}" target="_blank" rel="noopener">Open full license text</a>.</p>
+            <p>The website font is used under the SIL Open Font License 1.1. <a href="${IBM_PLEX_LICENSE_URL}" target="_blank" rel="noopener">Open full license text</a>.</p>
+            <h4>Hubot Sans</h4>
+            <p>The wordmark uses Hubot Sans Light under the SIL Open Font License 1.1. <a href="${HUBOT_SANS_LICENSE_URL}" target="_blank" rel="noopener">Open full license text</a>.</p>
             <h4>Tux / Linux</h4>
             <p>The Tux image is by Larry Ewing. Permission to use and modify it is granted provided Larry Ewing and The GIMP are acknowledged.</p>
             <p>Linux® is the registered trademark of Linus Torvalds in the U.S. and other countries.</p>
@@ -950,7 +955,7 @@
         function scheduleTopChartAutoLoad() {
           if (topChartAutoLoadScheduled || topChartLoadRequested) return;
           topChartAutoLoadScheduled = true;
-          onStartOverlayDone(function () {
+          onIntroBrandReady(function () {
             const trigger = function () {
               if (topChartLoadRequested) return;
               requestTopChartLoad();
@@ -3272,44 +3277,39 @@
           onScroll();
         }
 
-        function markStartOverlayDone() {
+        function markIntroBrandReady() {
           try {
-            if (window._dax_start_overlay_done === true) return;
-            window._dax_start_overlay_done = true;
-            window.dispatchEvent(new Event('dax:start-overlay-done'));
+            if (window._public_intro_brand_ready === true) return;
+            window._public_intro_brand_ready = true;
+            window.dispatchEvent(new Event('public:intro-brand-ready'));
           } catch (_) {}
         }
 
-        function onStartOverlayDone(fn) {
+        function onIntroBrandReady(fn) {
           if (typeof fn !== 'function') return;
           try {
-            if (window._dax_start_overlay_done === true) {
+            if (window._public_intro_brand_ready === true) {
               fn();
               return;
             }
           } catch (_) {}
-          window.addEventListener('dax:start-overlay-done', function () {
+          window.addEventListener('public:intro-brand-ready', function () {
             try { fn(); } catch (_) {}
           }, { once: true });
         }
 
-        function initStartOverlay() {
-          const overlay = document.querySelector('.start-overlay');
-          const navLogoSlot = document.querySelector('.nav-logo-slot');
-          const navSetupLink = document.getElementById('nav-setup');
-          if (!overlay) {
-            try { if (navLogoSlot) navLogoSlot.classList.add('is-visible'); } catch (_) {}
-            markStartOverlayDone();
+        function initIntroBrand() {
+          const brand = document.querySelector('.intro-brand');
+          if (!brand) {
+            markIntroBrandReady();
             return;
           }
-          const flight = overlay.querySelector('.start-logo-flight');
-          const logo = overlay.querySelector('.start-logo-gold') || overlay.querySelector('.start-logo');
+          const logo = brand.querySelector('.start-logo');
           let done = false;
-          const motionDelayMs = 180;
-          const motionDurationMs = 760;
-          const fadeDurationMs = 180;
-          const staticHoldMs = 260;
-          const shouldAnimateToNav = (function () {
+          const revealDelayMs = 420;
+          const revealDurationMs = 680;
+          const timers = [];
+          const shouldAnimate = (function () {
             try {
               return (window.scrollY || window.pageYOffset || 0) <= 2;
             } catch (_) {
@@ -3317,151 +3317,34 @@
             }
           })();
 
-          function revealNavLogo() {
-            try { if (navLogoSlot) navLogoSlot.classList.add('is-visible'); } catch (_) {}
+          function later(fn, delayMs) {
+            timers.push(setTimeout(fn, delayMs));
           }
 
-          function waitForNavTargetReady(cb) {
-            if (typeof cb !== 'function') return;
-            if (!shouldAnimateToNav || !navSetupLink || !navLogoSlot) {
-              cb();
-              return;
-            }
-
-            let finished = false;
-            function done() {
-              if (finished) return;
-              finished = true;
-              cb();
-            }
-
-            let lastSignature = '';
-            let stableFrames = 0;
-            const startedAt = Date.now();
-
-            function signature() {
-              try {
-                const setupRect = navSetupLink.getBoundingClientRect();
-                const slotRect = navLogoSlot.getBoundingClientRect();
-                return [
-                  Math.round(setupRect.left * 10),
-                  Math.round(setupRect.width * 10),
-                  Math.round(slotRect.left * 10),
-                  Math.round(slotRect.width * 10),
-                ].join(':');
-              } catch (_) {
-                return '';
-              }
-            }
-
-            function poll() {
-              if (finished) return;
-              const sig = signature();
-              if (sig && sig === lastSignature) {
-                stableFrames += 1;
-              } else {
-                stableFrames = 0;
-                lastSignature = sig;
-              }
-              if (stableFrames >= 2 || Date.now() - startedAt > 900) {
-                done();
-                return;
-              }
-              window.requestAnimationFrame(poll);
-            }
-
-            try {
-              if (document.fonts && document.fonts.load) {
-                Promise.allSettled([
-                  document.fonts.load('600 1rem "IBM Plex Mono"'),
-                  document.fonts.ready,
-                ]).finally(function () {
-                  window.requestAnimationFrame(poll);
-                });
-                return;
-              }
-            } catch (_) {}
-            window.requestAnimationFrame(poll);
-          }
-
-          function hideOverlay() {
+          function finishReveal() {
             if (done) return;
             done = true;
-            try { overlay.classList.remove('is-active', 'is-transitioning', 'is-hiding'); } catch (_) {}
-            try { overlay.style.display = 'none'; } catch (_) {}
-            revealNavLogo();
-            markStartOverlayDone();
+            timers.forEach(function (timer) {
+              try { clearTimeout(timer); } catch (_) {}
+            });
+            try { brand.classList.add('is-revealed'); } catch (_) {}
+            markIntroBrandReady();
           }
 
-          function finish(skipAnimation) {
+          function startAnimation(skipAnimation) {
             if (done) return;
-            if (skipAnimation) {
-              revealNavLogo();
-              hideOverlay();
+            if (skipAnimation || !shouldAnimate) {
+              finishReveal();
               return;
             }
-            if (!shouldAnimateToNav) {
-              setTimeout(function () {
-                if (done) return;
-                revealNavLogo();
-                hideOverlay();
-              }, staticHoldMs);
-              return;
-            }
-            if (!flight || !navLogoSlot) {
-              revealNavLogo();
-              hideOverlay();
-              return;
-            }
-            let sourceRect = null;
-            let targetRect = null;
-            let setupRect = null;
             try {
-              sourceRect = flight.getBoundingClientRect();
-              targetRect = navLogoSlot.getBoundingClientRect();
-              if (navSetupLink) setupRect = navSetupLink.getBoundingClientRect();
-            } catch (_) {}
-            if (!sourceRect || !targetRect || !(sourceRect.width > 0) || !(targetRect.width > 0)) {
-              hideOverlay();
-              return;
-            }
-
-            const sourceCx = sourceRect.left + sourceRect.width / 2;
-            const sourceCy = sourceRect.top + sourceRect.height / 2;
-            let targetCx = targetRect.left + targetRect.width / 2;
-            const targetCy = targetRect.top + targetRect.height / 2;
-            if (setupRect && setupRect.width > 0) {
-              let gapPx = 16;
-              try {
-                const topNav = document.querySelector('.top-nav');
-                if (topNav) {
-                  const cs = window.getComputedStyle(topNav);
-                  const parsed = parseFloat(cs.columnGap || cs.gap || '');
-                  if (Number.isFinite(parsed) && parsed >= 0) gapPx = parsed;
-                }
-              } catch (_) {}
-              targetCx = setupRect.left - gapPx - (targetRect.width / 2);
-            }
-            const dx = targetCx - sourceCx;
-            const dy = targetCy - sourceCy;
-            const scale = targetRect.width / sourceRect.width;
-
-            try {
-              flight.style.setProperty('--start-target-x', dx.toFixed(2) + 'px');
-              flight.style.setProperty('--start-target-y', dy.toFixed(2) + 'px');
-              flight.style.setProperty('--start-target-scale', String(scale));
-              overlay.classList.add('is-transitioning');
-              void flight.offsetWidth;
-              setTimeout(function () {
-                try { flight.classList.add('is-moving'); } catch (_) {}
-              }, motionDelayMs);
-              setTimeout(function () {
-                revealNavLogo();
-                try { overlay.classList.add('is-hiding'); } catch (_) {}
-              }, motionDelayMs + motionDurationMs);
-              setTimeout(hideOverlay, motionDelayMs + motionDurationMs + fadeDurationMs);
+              void brand.offsetWidth;
+              later(function () {
+                if (!done) brand.classList.add('is-revealed');
+              }, revealDelayMs);
+              later(finishReveal, revealDelayMs + revealDurationMs);
             } catch (_) {
-              hideOverlay();
+              finishReveal();
             }
           }
 
@@ -3472,24 +3355,22 @@
           })();
           const maxWaitMs = 700;
           const timeoutId = setTimeout(function () {
-            // If logo isn't ready quickly, skip startup animation entirely.
-            finish(true);
+            // If the logo is slow or unavailable, show the complete lockup.
+            startAnimation(true);
           }, maxWaitMs);
 
           const onLogoReady = function () {
             clearTimeout(timeoutId);
-            waitForNavTargetReady(function () {
-              finish(reduceMotion);
-            });
+            startAnimation(reduceMotion);
           };
           const onLogoError = function () {
             clearTimeout(timeoutId);
-            finish(true);
+            startAnimation(true);
           };
 
           if (!logo) {
             clearTimeout(timeoutId);
-            finish(true);
+            startAnimation(true);
             return;
           }
           try {
@@ -3826,7 +3707,7 @@
         function init() {
           initBackgroundParallax();
           initThemeToggle();
-          initStartOverlay();
+          initIntroBrand();
           initLanguage();
           initDisclaimer();
           initImpressum();
@@ -3864,16 +3745,6 @@
             link.addEventListener('click', function(e){
               try { e.preventDefault(); } catch (_) {}
               scrollToSetupOfDay('smooth');
-            });
-          })();
-          (function(){
-            var link = document.getElementById('nav-home');
-            if (!link) return;
-            link.addEventListener('click', function(e){
-              try { e.preventDefault(); } catch (_) {}
-              try { window.location.reload(); } catch (_) {
-                try { window.location.href = window.location.href; } catch (_) {}
-              }
             });
           })();
           // Subscribe form handler (Setup Of The Day)
@@ -3983,7 +3854,7 @@
               fired = true;
               setTimeout(go, 260);
             };
-            onStartOverlayDone(run);
+            onIntroBrandReady(run);
           })();
           window._has_running = false;
           window._has_closed = false;
@@ -4033,6 +3904,22 @@
             return stepper.getAttribute('data-guide-open') === 'true';
           }
 
+          function lockDesktopIntroPosition() {
+            if (isMobile()) return;
+            var section = stepper.closest('.section-intro');
+            var introInner = stepper.closest('.intro-inner');
+            if (!section || !introInner || section.classList.contains('is-guide-open')) return;
+
+            try {
+              var sectionRect = section.getBoundingClientRect();
+              var introRect = introInner.getBoundingClientRect();
+              var sectionPaddingTop = parseFloat(window.getComputedStyle(section).paddingTop) || 0;
+              var introOffset = Math.max(0, introRect.top - sectionRect.top - sectionPaddingTop);
+              section.style.setProperty('--guide-intro-offset', introOffset.toFixed(3) + 'px');
+              section.classList.add('is-guide-open');
+            } catch (_) {}
+          }
+
           function showStep(step, opts) {
             var n = clampStep(parseInt(String(step), 10) || 1);
             stepper.setAttribute('data-current-step', String(n));
@@ -4068,12 +3955,19 @@
               e.preventDefault();
               var introDown = document.getElementById('intro-down');
               if (introDown) introDown.hidden = true;
+              var shouldScrollToGuide = isMobile();
+              if (!shouldScrollToGuide) lockDesktopIntroPosition();
               stepper.setAttribute('data-guide-open', 'true');
               showStep(2);
-              try {
-                var top = stepper.getBoundingClientRect().top + window.scrollY - 96;
-                window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
-              } catch (_) {}
+              if (shouldScrollToGuide) {
+                try {
+                  var header = document.querySelector('.header');
+                  var headerHeight = header ? header.getBoundingClientRect().height : 56;
+                  var guideTopOffset = headerHeight + 8;
+                  var top = stepper.getBoundingClientRect().top + window.scrollY - guideTopOffset;
+                  window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+                } catch (_) {}
+              }
               return;
             }
 
