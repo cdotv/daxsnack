@@ -1,5 +1,5 @@
 -r requirements.txt
-black==26.5.1
+black==26.10.1
 click==8.4.2
 mypy-extensions==1.1.0
 packaging==25.0
